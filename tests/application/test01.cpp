@@ -13,8 +13,7 @@ TEST(ARGO_WORKFLOW_LIB, WorkflowGeneration) {
 
     auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.so");
     if (!lib->IsValid()) {
-        // build mac
-        lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.dylib");
+        lib = std::make_unique<EOEPCA::EOEPCAargo>("./build/libeoepcaargo.so");
     }
     if (!lib->IsValid()) {
         //
