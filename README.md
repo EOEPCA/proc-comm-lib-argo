@@ -28,15 +28,15 @@
   <h3 align="center">proc_comm_lib_argo</h3>
 
   <p align="center">
-    Tools and environment definitions for local EOEPCA service development activities for C++
+    Argo Workflows client for C++. 
     <br />
-    <a href="https://github.com/EOEPCA/dev-env-cpp"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/EOEPCA/proc-comm-lib-argo"><strong>Explore the docs »</strong></a>
     <br />
-    <a href="https://github.com/EOEPCA/dev-env-cpp">View Demo</a>
+    <a href="https://github.com/EOEPCA/proc-comm-lib-argo">View Demo</a>
     ·
-    <a href="https://github.com/EOEPCA/dev-env-cpp/issues">Report Bug</a>
+    <a href="https://github.com/EOEPCA/proc-comm-lib-argo/issues">Report Bug</a>
     ·
-    <a href="https://github.com/EOEPCA/dev-env-cpp/issues">Request Feature</a>
+    <a href="https://github.com/EOEPCA/proc-comm-lib-argo/issues">Request Feature</a>
   </p>
 </p>
 
@@ -44,31 +44,52 @@
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [About The Project](#about-the-project)
+- [About the Project](#about-the-project)
   - [Built With](#built-with)
+  - [Travis Build](#travis-build)
+  - [Manual Build](#manual-build)
+    - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-- [License](#license)
+  - [Installation](#installation)
+  - [Testing](#testing)
+- [Documentation](#documentation)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
 
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
- *proc_comm_lib_argo* is a shared library to provides the means to be able to create and submit Argo Workflows.
+ *proc_comm_lib_argo* is a shared library to provides the means to perform CRUD actions against Argo Workflows application resources.
 
 ### Built With
 
 - [CMAKE](https://cmake.org/)
 - [googletest](https://github.com/google/googletest)
 
+### Travis Build
+
+The library can be compiled using Travis. All necessary scripts are provided in the `travis` folder
+
+To speed up the build phase of Travis we can use a compiler prepared by the EOEPCA team
+
+You need to add an environment variable with reference to the docker image
+
+```ini
+BUILDER_ENV_IMAGE=eoepca/eoepca-build-cpp:1.0
+```
+
+### Manual Build
 
 ### Prerequisites
 
 Before you start, you should already have the following softwares installed:
 
-- [Vagrant](https://www.vagrantup.com/docs/installation/)
-- [VirtualBox](https://www.virtualbox.org/manual/ch02.html)
+- [Docker](https://www.docker.com/)
+- [Linux bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
+
 
 To compile the library, a compiler that supports C++[14](https://en.cppreference.com/w/cpp/14)/[17](https://en.cppreference.com/w/cpp/17) is required.
 
