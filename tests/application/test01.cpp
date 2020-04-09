@@ -1,27 +1,36 @@
 
-#include <proc_comm_lib_argo/application.hpp>
+#include <eoepca/argo/application.hpp>
 #include <proc_comm_lib_argo/argoworkflowapi.hpp>
 #include <fstream>
+#include <eoepca/argo/eoepcaargo.hpp>
 #include "gtest/gtest.h"
 
-#define TEST_CASE_DIRECTORY GetDirectoryName(__FILE__)
 
 
-
-bool is_file_exist(std::basic_string<char> fileName)
-{
-    std::ifstream infile(fileName);
-    return infile.good();
-}
 
 TEST(ARGO_WORKFLOW_LIB, WorkflowGeneration) {
 
 
-    std::cout << "Starting test" << std::endl;
+    auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.so");
+    if (!lib->IsValid()) {
+        // build mac
+        lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.dylib");
+    }
+    if (!lib->IsValid()) {
+        //
+        std::cout << "Library not found\n";
+        EXPECT_TRUE(false);
+    }
 
-    std::string filename = "application/data/test1_workflow.yaml";
 
-    std::string expected_yamlfile = "asdasd";
+    std::string expected_yamlfile;
+    std::string filename = "tests/application/data/test1_workflow.yaml";
+    std::ifstream infile(filename);
+    if (infile.good()) {
+        std::stringstream sBuffer;
+        sBuffer << infile.rdbuf();
+        expected_yamlfile=sBuffer.str();
+    }
 
 
     std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
@@ -33,8 +42,11 @@ TEST(ARGO_WORKFLOW_LIB, WorkflowGeneration) {
     run->setDockerImage("centos:7");
     run->moveApplication(application);
 
-    std::unique_ptr<proc_comm_lib_argo::WorkflowUtils> workflowUtils = std::make_unique<proc_comm_lib_argo::WorkflowUtils>();
-    std::string yamlFile = workflowUtils->create_workflow_yaml(run.get());
+
+
+    std::list<std::string> argoWorkflows{};
+    lib->create_workflow_yaml(run.get(), argoWorkflows);
+    std::string yamlFile = argoWorkflows.front();
 
 
   EXPECT_EQ(yamlFile, expected_yamlfile);

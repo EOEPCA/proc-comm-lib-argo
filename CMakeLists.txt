@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(proc_comm_lib_argo)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MACOSX_RPATH OFF)
+set(CMAKE_CXX_FLAGS "-fPIC")
 
 include_directories(includes)
 include_directories(3ty)
