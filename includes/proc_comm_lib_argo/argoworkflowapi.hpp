@@ -30,7 +30,7 @@ namespace proc_comm_lib_argo {
 
 
         // create workflow yaml from application class
-        std::list<std::string> create_workflow_yaml(Run* run);
+        void  create_workflow_yaml(Run* run,std::list<std::string>& argoWorkflows);
 
     };
 }

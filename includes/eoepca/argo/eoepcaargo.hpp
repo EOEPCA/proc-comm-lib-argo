@@ -17,14 +17,12 @@ public:
       version = (long (*)(void))dlsym(handle, "version");
       if (!version) {
         setValid(false);
-          std::cout<<"hello1\n";
         return;
       }
 
-      create_workflow_yaml = (std::list<std::string>  (*)(proc_comm_lib_argo::Run *))dlsym(handle, "create_workflow_yaml");
+      create_workflow_yaml = (void (*)(proc_comm_lib_argo::Run *,std::list<std::string>& ))dlsym(handle, "create_workflow_yaml");
       if (!version) {
         setValid(false);
-        std::cout<<"hello2\n";
         return;
       }
     }
@@ -40,7 +38,7 @@ public:
 
 public:
   long (*version)(void);
-  std::list<std::string> (*create_workflow_yaml)(proc_comm_lib_argo::Run *);
+  void (*create_workflow_yaml)(proc_comm_lib_argo::Run *,std::list<std::string>& );
 };
 
 } // namespace EOEPCA

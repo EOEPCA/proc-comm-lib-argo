@@ -33,7 +33,7 @@ SET(MODS_LIBS
 
 
 add_library(eoepcaargo SHARED ${INCLUDE_LIB_SRC} ${LIB_SRC}  )
-TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  )
+TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp  )
 
 add_executable(proc_comm_lib_argo ${src_main})
 

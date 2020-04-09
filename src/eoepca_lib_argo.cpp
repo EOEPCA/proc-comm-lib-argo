@@ -10,11 +10,12 @@
 
 extern "C" long version() { return 1; }
 
-extern "C" std::list<std::string> create_workflow_yaml(proc_comm_lib_argo::Run *run) {
+extern "C" void create_workflow_yaml(proc_comm_lib_argo::Run *run,std::list<std::string> &argoWorkflows) {
 
     auto argo = std::make_unique<proc_comm_lib_argo::WorkflowUtils>();
+    argo->create_workflow_yaml(run,argoWorkflows);
 
-    return argo->create_workflow_yaml(run);
+
 }
 
 
