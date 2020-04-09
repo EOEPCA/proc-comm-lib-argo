@@ -162,11 +162,6 @@ The library has been created `libeoepcaargo.so`
 
 ### Testing
 
-#### Prerequisites
-
-- [LibXml2](http://xmlsoft.org/)
-- [LibXslt](http://xmlsoft.org/)
-
 from the root of the repository
 
 ```shell
@@ -178,6 +173,93 @@ runs only the unit tests
 ## Documentation
 
 The component documentation can be found at https://github.com/EOEPCA/proc-comm-lib-argo/
+
+
+### Running
+
+To run the application has built a runner:
+
+`proc-comm-lib-argo/src/main.cpp`
+
+run:
+
+```sh
+
+mkdir run
+cp build/proc_comm_lib_argo build/libeoepcaargo.so run/
+
+cd run/
+
+./proc_comm_lib_argo
+```
+
+expected result:
+```
+Starting test
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: eoepca-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        -
+          - name: stage-in
+            template: stage-in-template
+        -
+          - name: eoepca
+            template: eoepca-template
+        -
+          - name: stage-out
+            template: stage-out-template
+    - name: stage-in-template
+      container:
+        image: centos:7
+        command: [echo]
+        args: [stage-in]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+    - name: stage-out-template
+      container:
+        image: centos:7
+        command: [echo]
+        args: [stage-out]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+    - name: eoepca-template
+      container:
+        image: centos:7
+        command: [echo]
+        args: [hello, world]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+
+```
+
+## Roadmap
+
+See the [open issues](https://github.com/EOEPCA/proc-comm-lib-argo/issues) for a list of proposed features (and known issues).
+
+<!-- CONTRIBUTING -->
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 
 <!-- LICENSE -->
