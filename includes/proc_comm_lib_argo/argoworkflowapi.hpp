@@ -6,10 +6,10 @@
 #define PROC_COMM_LIB_ARGO_ARGOWORKFLOWAPI_HPP
 
 
-
 #include <iostream>
-#include "application.hpp"
-
+#include <eoepca/argo/application.hpp>
+#include <string>
+#include <list>
 
 namespace proc_comm_lib_argo {
 
@@ -29,9 +29,9 @@ namespace proc_comm_lib_argo {
         ~WorkflowUtils() {};
 
 
-        // creat workflow yaml from application class
-        std::string create_workflow_yaml(Run* run);
-        //std::string create_workflow_yaml();
+        // create workflow yaml from application class
+        std::list<std::string> create_workflow_yaml(Run* run);
+
     };
 }
 

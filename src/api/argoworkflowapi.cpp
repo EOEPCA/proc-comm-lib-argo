@@ -77,8 +77,9 @@ namespace proc_comm_lib_argo {
 
 
     // create workflow yaml from application class
-    std::string WorkflowUtils::create_workflow_yaml(Run *run) {
+    std::list<std::string> WorkflowUtils::create_workflow_yaml(Run *run) {
 
+        std::list<std::string>yaml_list{};
         // loop through all applications
         for (auto& app: run->getApplications())
         {
@@ -114,10 +115,11 @@ namespace proc_comm_lib_argo {
 
             YAML::Emitter out;
             out << doc;
-            std::cout << "Here's the output YAML:\n\n" << out.c_str();
+            yaml_list.emplace_back(out.c_str());
 
         }
-        return "ok";
+        return yaml_list;
+
     }
 
 

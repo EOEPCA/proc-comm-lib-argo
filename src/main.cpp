@@ -1,11 +1,22 @@
 #include <iostream>
-#include <proc_comm_lib_argo/application.hpp>
-#include <yaml-cpp-yaml-cpp-0.6.3/include/yaml-cpp/node/node.h>
-#include <yaml-cpp-yaml-cpp-0.6.3/include/yaml-cpp/yaml.h>
+#include <eoepca/argo/application.hpp>
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/yaml.h>
 #include <fstream>
-#include <proc_comm_lib_argo/argoworkflowapi.hpp>
+#include <eoepca/argo/eoepcaargo.hpp>
 
 int main() {
+
+    auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./libeoepcaargo.so");
+    if (!lib->IsValid()) {
+        // build mac
+        lib = std::make_unique<EOEPCA::EOEPCAargo>("./libeoepcaargo.dylib");
+    }
+    if (!lib->IsValid()) {
+        //
+        std::cout<<"Library not found\n";
+        return 5;
+    }
 
     std::cout << "Starting test" << std::endl;
 
@@ -21,9 +32,6 @@ int main() {
 
     std::cout << txt << std::endl;
 
-
-
-
     std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
     application->addParam("hello");
     application->addParam("world");
@@ -33,8 +41,11 @@ int main() {
     run->setDockerImage("centos:7");
     run->moveApplication(application);
 
-    std::unique_ptr<proc_comm_lib_argo::WorkflowUtils> workflowUtils = std::make_unique<proc_comm_lib_argo::WorkflowUtils>();
-    workflowUtils->create_workflow_yaml(run.get());
+    //std::unique_ptr<proc_comm_lib_argo::WorkflowUtils> workflowUtils = std::make_unique<proc_comm_lib_argo::WorkflowUtils>();
+    for(auto &s:lib->create_workflow_yaml(run.get())){
+        std::cout << s<<"\n";
+    }
+
 
     return 0;
 }
