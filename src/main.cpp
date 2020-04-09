@@ -42,8 +42,8 @@ int main() {
   run->setDockerImage("centos:7");
   run->moveApplication(application);
 
-  // std::unique_ptr<proc_comm_lib_argo::WorkflowUtils> workflowUtils =
-  // std::make_unique<proc_comm_lib_argo::WorkflowUtils>();
+  // std::unique_ptr<proc-comm-lib-argo::WorkflowUtils> workflowUtils =
+  // std::make_unique<proc-comm-lib-argo::WorkflowUtils>();
 
   std::list<std::string> argoWorkflows{};
   lib->create_workflow_yaml(run.get(), argoWorkflows);

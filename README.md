@@ -25,7 +25,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">proc_comm_lib_argo</h3>
+  <h3 align="center">proc-comm-lib-argo</h3>
 
   <p align="center">
     Argo Workflows client for C++. 
@@ -62,7 +62,7 @@
 
 ## About The Project
 
- *proc_comm_lib_argo* is a shared library to provides the means to perform CRUD actions against Argo Workflows application resources.
+ *proc-comm-lib-argo* is a shared library to provides the means to perform CRUD actions against Argo Workflows application resources.
 
 ### Built With
 
@@ -169,9 +169,9 @@ drwxr-xr-x 3 root root   4096 apr  9 11:36 3ty
 -rw-r--r-- 1 root root  14579 apr  9 11:37 Makefile
 -rw-r--r-- 1 root root   1702 apr  9 11:37 cmake_install.cmake
 drwxr-xr-x 2 root root   4096 apr  9 11:37 bin
--rw-r--r-- 1 root root  49518 apr  9 11:37 proc_comm_lib_argo.cbp
+-rw-r--r-- 1 root root  49518 apr  9 11:37 proc-comm-lib-argo.cbp
 -rwxr-xr-x 1 root root 301832 apr  9 11:38 libeoepcaargo.so
--rwxr-xr-x 1 root root  25000 apr  9 11:38 proc_comm_lib_argo
+-rwxr-xr-x 1 root root  25000 apr  9 11:38 proc-comm-lib-argo
 drwxr-xr-x 2 root root   4096 apr  9 11:38 lib
 drwxr-xr-x 2 root root   4096 apr  9 11:42 build
 drwxr-xr-x 6 root root   4096 apr  9 11:42 tests
@@ -207,11 +207,11 @@ run:
 ```sh
 
 mkdir run
-cp build/proc_comm_lib_argo build/libeoepcaargo.so run/
+cp build/proc-comm-lib-argo build/libeoepcaargo.so run/
 
 cd run/
 
-./proc_comm_lib_argo
+./proc-comm-lib-argo
 ```
 
 expected result:

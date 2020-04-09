@@ -3,7 +3,7 @@
 //
 
 #include <eoepca/argo/application.hpp>
-#include <proc_comm_lib_argo/argoworkflowapi.hpp>
+#include <proc-comm-lib-argo/argoworkflowapi.hpp>
 #include <memory>
 #include <string>
 #include <list>

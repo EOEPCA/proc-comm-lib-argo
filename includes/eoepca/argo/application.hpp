@@ -47,6 +47,6 @@ namespace proc_comm_lib_argo {
             Run::dockerImage = dockerImage;
         }
     };
-}  // namespace proc_comm_lib_argo
+}  // namespace proc-comm-lib-argo
 
 #endif

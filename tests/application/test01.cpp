@@ -1,11 +1,8 @@
 
 #include <eoepca/argo/application.hpp>
-#include <proc_comm_lib_argo/argoworkflowapi.hpp>
 #include <fstream>
 #include <eoepca/argo/eoepcaargo.hpp>
 #include "gtest/gtest.h"
-
-
 
 
 TEST(ARGO_WORKFLOW_LIB, WorkflowGeneration) {

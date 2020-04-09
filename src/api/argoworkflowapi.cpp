@@ -2,7 +2,7 @@
 // Created by bla on 07/04/20.
 //
 
-#include <proc_comm_lib_argo/argoworkflowapi.hpp>
+#include <proc-comm-lib-argo/argoworkflowapi.hpp>
 #include <iostream>
 #include <yaml-cpp/yaml.h>
 #include <fstream>

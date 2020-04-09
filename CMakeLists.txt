@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(proc_comm_lib_argo)
+project(proc-comm-lib-argo)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MACOSX_RPATH OFF)
@@ -23,7 +23,7 @@ SET(INCLUDE_LIB_SRC
 
 SET(LIB_SRC
         src/api/argoworkflowapi.cpp
-        includes/proc_comm_lib_argo/argoworkflowapi.hpp
+        includes/proc-comm-lib-argo/argoworkflowapi.hpp
         src/model/workflow.cpp
         src/model/workflow.hpp
         src/eoepca_lib_argo.cpp
@@ -37,8 +37,8 @@ SET(MODS_LIBS
 add_library(eoepcaargo SHARED ${INCLUDE_LIB_SRC} ${LIB_SRC}  )
 TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp  )
 
-add_executable(proc_comm_lib_argo ${src_main})
+add_executable(proc-comm-lib-argo ${src_main})
 
-target_link_libraries(proc_comm_lib_argo yaml-cpp ${MODS_LIBS})
+target_link_libraries(proc-comm-lib-argo yaml-cpp ${MODS_LIBS})
 
 add_subdirectory(tests)
