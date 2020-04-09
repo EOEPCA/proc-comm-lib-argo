@@ -55,7 +55,7 @@
 
 ## About The Project
 
- proc_comm_lib_argo is a shared library to provide to ADES Core the means to be able to create and submit Argo Workflows.
+ *proc_comm_lib_argo* is a shared library to provides the means to be able to create and submit Argo Workflows.
 
 ### Built With
 
@@ -63,34 +63,121 @@
 - [googletest](https://github.com/google/googletest)
 
 
-<!-- GETTING STARTED -->
-
-## Getting Started
-
-1. Download and install [VirtualBox](https://www.virtualbox.org/) 
-
-2. Download and install the appropriate [Vagrant package for your OS](https://www.vagrantup.com/downloads.html).
-
-3. Download EOEPCA development environment template for c++ 
-    
-<pre><code>   wget https://github.com/EOEPCA/dev-env-cpp/archive/develop.zip'</code></pre>
-
-4. Build and instantiate the EOEPCA development environment
-
-* Via CentOs GUI
- <pre><code>  DEV_DESKTOP=true vagrant up</code></pre>
-
-* Via ssh
-
-<pre><code>   vagrant up
-   vagrant ssh</code></pre>
-
 ### Prerequisites
 
 Before you start, you should already have the following softwares installed:
 
 - [Vagrant](https://www.vagrantup.com/docs/installation/)
 - [VirtualBox](https://www.virtualbox.org/manual/ch02.html)
+
+To compile the library, a compiler that supports C++[14](https://en.cppreference.com/w/cpp/14)/[17](https://en.cppreference.com/w/cpp/17) is required.
+
+EOEPCA team provides a ready-made Docker Image
+
+```shel
+docker pull eoepca/eoepca-build-cpp:1.0
+```
+
+If you want to create the Docker image yourself, the repository provides a Docker file to satisfy all requests (Dockerfile_builder)
+
+```bash
+docker build -t eoepca-build-cpp:1.0 -f Dockerfile_builder
+```
+
+
+## Getting Started
+
+To get a local copy up and running follow these simple steps.
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [Linux bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
+
+### Installation
+
+1. Clone the repo
+
+```sh
+git clone https://github.com/EOEPCA/proc-comm-lib-argo.git
+```
+
+2. Change local directory
+
+```sh
+cd cd proc-comm-lib-argo
+```
+
+For this example we'll use the ready-made Docker Image `eoepca/eoepca-build-cpp:1.0`
+
+3. Build application
+
+Let's prepare the environment variables
+
+```shell
+export LOCAL_DOCKERIMAGE='eoepca/eoepca-build-cpp:1.0'
+export CMAKERELEASE='Release'
+```
+
+Prepare the makefile
+
+```shel
+docker run --rm -ti  -v $PWD:/project/ -w /project/build/  ${LOCAL_DOCKERIMAGE} cmake -DCMAKE_BUILD_TYPE=${CMAKERELEASE} -G "CodeBlocks - Unix Makefiles" ..
+```
+
+... and make
+
+```shel
+docker run --rm -ti  -v $PWD:/project/ -w /project/build/  ${LOCAL_DOCKERIMAGE} make
+```
+
+list directory
+
+```shell
+ls -ltr build/
+```
+
+expected results:
+
+```shell
+[qbert@mycase proc-comm-lib-argo]$ ls -ltr build/
+total 476
+drwxr-xr-x 3 root root   4096 apr  9 11:36 3ty
+-rw-r--r-- 1 root root    236 apr  9 11:36 yaml-cpp.pc
+-rw-r--r-- 1 root root  52293 apr  9 11:37 CMakeCache.txt
+-rw-r--r-- 1 root root  14579 apr  9 11:37 Makefile
+-rw-r--r-- 1 root root   1702 apr  9 11:37 cmake_install.cmake
+drwxr-xr-x 2 root root   4096 apr  9 11:37 bin
+-rw-r--r-- 1 root root  49518 apr  9 11:37 proc_comm_lib_argo.cbp
+-rwxr-xr-x 1 root root 301832 apr  9 11:38 libeoepcaargo.so
+-rwxr-xr-x 1 root root  25000 apr  9 11:38 proc_comm_lib_argo
+drwxr-xr-x 2 root root   4096 apr  9 11:38 lib
+drwxr-xr-x 2 root root   4096 apr  9 11:42 build
+drwxr-xr-x 6 root root   4096 apr  9 11:42 tests
+drwxr-xr-x 6 root root   4096 apr  9 11:42 CMakeFiles
+
+```
+
+The library has been created `libeoepcaargo.so`
+
+### Testing
+
+#### Prerequisites
+
+- [LibXml2](http://xmlsoft.org/)
+- [LibXslt](http://xmlsoft.org/)
+
+from the root of the repository
+
+```shell
+ ./build/tests/libtest-test --gtest_break_on_failure
+```
+
+runs only the unit tests
+
+## Documentation
+
+The component documentation can be found at https://github.com/EOEPCA/proc-comm-lib-argo/
 
 
 <!-- LICENSE -->
