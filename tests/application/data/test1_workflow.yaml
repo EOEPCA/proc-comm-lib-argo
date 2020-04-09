@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: eoepca-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        -
+          - name: stage-in
+            template: stage-in-template
+        -
+          - name: eoepca
+            template: eoepca-template
+        -
+          - name: stage-out
+            template: stage-out-template
+    - name: stage-in-template
+      container:
+        image: centos:7
+        command: [echo]
+        args: [stage-in]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+    - name: stage-out-template
+      container:
+        image: centos:7
+        command: [echo]
+        args: [stage-out]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+    - name: eoepca-template
+      container:
+        image: centos:7
+        command: [echo]
+        args: [hello, world]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
