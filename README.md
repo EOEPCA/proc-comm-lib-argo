@@ -1,5 +1,4 @@
 <!--
-***
 *** To avoid retyping too much info. Do a search and replace for the following:
 *** dev-env-cpp, twitter_handle, email
 -->
