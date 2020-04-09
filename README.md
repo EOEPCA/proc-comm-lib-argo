@@ -293,14 +293,14 @@ Distributed under the Apache-2.0 License. See `LICENSE` for more information.
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [contributors-shield]: https://img.shields.io/github/contributors/EOEPCA/template-svce.svg?style=flat-square
-[contributors-url]: https://github.com/EOEPCA/template-svce/graphs/contributors
+[contributors-url]: https://github.com/EOEPCA/proc-comm-lib-argo/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/EOEPCA/template-svce.svg?style=flat-square
-[forks-url]: https://github.com/EOEPCA/template-svce/network/members
+[forks-url]: https://github.com/EOEPCA/proc-comm-lib-argo/network/members
 [stars-shield]: https://img.shields.io/github/stars/EOEPCA/template-svce.svg?style=flat-square
-[stars-url]: https://github.com/EOEPCA/template-svce/stargazers
+[stars-url]: https://github.com/EOEPCA/proc-comm-lib-argo/stargazers
 [issues-shield]: https://img.shields.io/github/issues/EOEPCA/template-svce.svg?style=flat-square
-[issues-url]: https://github.com/EOEPCA/template-svce/issues
+[issues-url]: https://github.com/EOEPCA/proc-comm-lib-argo/issues
 [license-shield]: https://img.shields.io/github/license/EOEPCA/template-svce.svg?style=flat-square
-[license-url]: https://github.com/EOEPCA/template-svce/blob/master/LICENSE
+[license-url]: https://github.com/EOEPCA/proc-comm-lib-argo/blob/master/LICENSE
 [build-shield]: https://www.travis-ci.com/EOEPCA/template-svce.svg?branch=master
 [product-screenshot]: images/screenshot.png
