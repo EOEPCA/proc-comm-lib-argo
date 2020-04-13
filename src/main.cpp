@@ -32,14 +32,12 @@ int main() {
 
   std::cout << txt << std::endl;
 
-  std::unique_ptr<proc_comm_lib_argo::Application> application =
-      std::make_unique<proc_comm_lib_argo::Application>();
-  application->addParam("hello");
-  application->addParam("world");
+  std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+  application->addParam("message","HelloWorld");
   application->setApplication("echo");
+  application->setDockerImage("centos:7");
 
   auto run = std::make_unique<proc_comm_lib_argo::Run>();
-  run->setDockerImage("centos:7");
   run->moveApplication(application);
 
   // std::unique_ptr<proc-comm-lib-argo::WorkflowUtils> workflowUtils =

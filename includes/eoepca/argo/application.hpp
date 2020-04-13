@@ -13,8 +13,9 @@
 
 namespace proc_comm_lib_argo {
     class Application {
-        std::vector<std::string> params{};
+        std::map<std::string, std::string> params{};
         std::string application{""};
+        std::string dockerImage{""};
     public:
         Application() = default;
         Application(const Application&) = delete;
@@ -25,11 +26,12 @@ namespace proc_comm_lib_argo {
         void setApplication(const std::string& application) {
             Application::application = application;
         }
-        void addParam(std::string pParam) { params.emplace_back(std::move(pParam)); }
-        const std::vector<std::string> getParams() const { return params; }
+        void addParam(std::string key, std::string value) { params.insert(std::make_pair(key, value)); }
+        const std::map<std::string, std::string> getParams() const { return params; }
+        const std::string& getDockerImage() const { return dockerImage; }
+        void setDockerImage(const std::string& img) { dockerImage = img; }
     };
     class Run {
-        std::string dockerImage{""};
         std::list<std::unique_ptr<Application>> applications{};
     public:
         Run() {}
@@ -42,10 +44,7 @@ namespace proc_comm_lib_argo {
         const std::list<std::unique_ptr<Application>>& getApplications() const {
             return applications;
         }
-        const std::string& getDockerImage() const { return dockerImage; }
-        void setDockerImage(const std::string& dockerImage) {
-            Run::dockerImage = dockerImage;
-        }
+
     };
 }  // namespace proc-comm-lib-argo
 
