@@ -181,7 +181,7 @@ namespace proc_comm_lib_argo {
 
         out << YAML::EndMap; // endmap spec
 
-        std::cout << "Here's the output YAML:\n" << out.c_str();
+        std::cout <<  out.c_str();
 
     }
 
