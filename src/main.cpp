@@ -18,36 +18,53 @@ int main() {
     return 5;
   }
 
-  std::cout << "Starting test" << std::endl;
 
-  std::string filename = "file1.yaml";
-
-  std::string txt;
-  std::ifstream file(filename);
-
-  if (file.is_open())
-    while (file.good())
-      getline(file, txt);
-  file.close();
-
-  std::cout << txt << std::endl;
-
+  ///
+  // WITHOUT STAGE IN
+/*
   std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
   application->addParam("message","HelloWorld");
-  application->setApplication("echo");
+  application->setApplication("print(\"{{workflow.parameters.message}}\")");
   application->setDockerImage("centos:7");
 
   auto run = std::make_unique<proc_comm_lib_argo::Run>();
   run->moveApplication(application);
 
-  // std::unique_ptr<proc-comm-lib-argo::WorkflowUtils> workflowUtils =
-  // std::make_unique<proc-comm-lib-argo::WorkflowUtils>();
 
   std::list<std::string> argoWorkflows{};
   lib->create_workflow_yaml(run.get(), argoWorkflows);
   for (auto &argoWorkflow : argoWorkflows) {
     std::cout << argoWorkflow << "\n";
   }
+*/
+  ////
+
+
+
+    // WITH STAGE IN
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+    application->addParam("message","HelloWorld");
+    application->setApplication("print(\"{{inputs.parameters.message}}\")");
+    application->setDockerImage("centos:7");
+
+    std::unique_ptr<proc_comm_lib_argo::StageInApplication> stageInApplication = std::make_unique<proc_comm_lib_argo::StageInApplication>();
+    stageInApplication->setApplication("print(\"preprocessed {{inputs.parameters.message}}\")");
+    stageInApplication->setDockerImage("centos:7");
+    application->setStageInApplication(stageInApplication);
+
+    auto run = std::make_unique<proc_comm_lib_argo::Run>();
+    run->moveApplication(application);
+
+
+    std::list<std::string> argoWorkflows{};
+    lib->create_workflow_yaml(run.get(), argoWorkflows);
+    for (auto &argoWorkflow : argoWorkflows) {
+        std::cout << argoWorkflow << "\n";
+    }
+
 
   return 0;
 }
+
+
+
