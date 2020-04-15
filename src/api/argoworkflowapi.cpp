@@ -59,7 +59,7 @@ namespace proc_comm_lib_argo {
     }
 
 
-    void generateYamlFromApp(Application &app) {
+    const std::string generateYamlFromApp(Application &app) {
         YAML::Emitter out;
 
         std::string app_name = "eoepca-app";
@@ -181,21 +181,16 @@ namespace proc_comm_lib_argo {
 
         out << YAML::EndMap; // endmap spec
 
-        std::cout <<  out.c_str();
+        return out.c_str();
 
     }
 
 // create workflow yaml from application class
     void WorkflowUtils::create_workflow_yaml(Run *run,std::list<std::string>& yaml_list) {
-
-
         // loop through all applications
-        for (auto &app: run->getApplications())
-        {
-            generateYamlFromApp( *app);
+        for (auto &app: run->getApplications()) {
+            yaml_list.emplace_back(generateYamlFromApp( *app));
         }
-
-
     }
 
 

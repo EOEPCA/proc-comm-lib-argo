@@ -31,6 +31,7 @@ int main() {
   ///
   // WITH STAGE IN
 
+
     std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
     application->addParam("message","https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue");
     application->setApplication("print(\"Downloaded {{inputs.parameters.message}}\")");
@@ -39,7 +40,7 @@ int main() {
     std::unique_ptr<proc_comm_lib_argo::StageInApplication> stageInApplication = std::make_unique<proc_comm_lib_argo::StageInApplication>();
     stageInApplication->setApplication("import urllib.request\n"
                                        "import xml.etree.ElementTree as ET\n"
-                                       "url = '{{inputs.parameters.message}}' \n"
+                                       "url = '{{inputs.parameters.message}}'\n"
                                        "response = urllib.request.urlopen(url)\n"
                                        "xml = response.read()\n"
                                        "tree = ET.fromstring(xml)\n"
@@ -47,6 +48,7 @@ int main() {
                                        "print(urllib.parse.quote(enclosure))");
     stageInApplication->setDockerImage("meetup/python");
     application->setStageInApplication(stageInApplication);
+
 
 
     ///
