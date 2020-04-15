@@ -33,9 +33,10 @@ TEST(ARGO_WORKFLOW_LIB, WorkflowGeneration) {
     application->addParam("hello");
     application->addParam("world");
     application->setApplication("echo");
+    application->setDockerImage("centos:7");
 
     auto run = std::make_unique<proc_comm_lib_argo::Run>();
-    run->setDockerImage("centos:7");
+
     run->moveApplication(application);
 
 

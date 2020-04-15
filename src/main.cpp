@@ -18,38 +18,50 @@ int main() {
     return 5;
   }
 
-  std::cout << "Starting test" << std::endl;
 
-  std::string filename = "file1.yaml";
+  ///
+  // WITHOUT STAGE IN
 
-  std::string txt;
-  std::ifstream file(filename);
+/*  std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+  application->setDockerImage("centos:7");
+  application->addParam("message","Hello World");
+  application->setApplication("print(\"{{workflow.parameters.message}}\")");*/
 
-  if (file.is_open())
-    while (file.good())
-      getline(file, txt);
-  file.close();
 
-  std::cout << txt << std::endl;
+  ///
+  // WITH STAGE IN
 
-  std::unique_ptr<proc_comm_lib_argo::Application> application =
-      std::make_unique<proc_comm_lib_argo::Application>();
-  application->addParam("hello");
-  application->addParam("world");
-  application->setApplication("echo");
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+    application->addParam("message","https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue");
+    application->setApplication("print(\"Downloaded {{inputs.parameters.message}}\")");
+    application->setDockerImage("centos:7");
 
-  auto run = std::make_unique<proc_comm_lib_argo::Run>();
-  run->setDockerImage("centos:7");
-  run->moveApplication(application);
+    std::unique_ptr<proc_comm_lib_argo::StageInApplication> stageInApplication = std::make_unique<proc_comm_lib_argo::StageInApplication>();
+    stageInApplication->setApplication("import urllib.request\n"
+                                       "import xml.etree.ElementTree as ET\n"
+                                       "url = '{{inputs.parameters.message}}' \n"
+                                       "response = urllib.request.urlopen(url)\n"
+                                       "xml = response.read()\n"
+                                       "tree = ET.fromstring(xml)\n"
+                                       "enclosure = tree[5][5].get('href')\n"
+                                       "print(urllib.parse.quote(enclosure))");
+    stageInApplication->setDockerImage("meetup/python");
+    application->setStageInApplication(stageInApplication);
 
-  // std::unique_ptr<proc-comm-lib-argo::WorkflowUtils> workflowUtils =
-  // std::make_unique<proc-comm-lib-argo::WorkflowUtils>();
 
-  std::list<std::string> argoWorkflows{};
-  lib->create_workflow_yaml(run.get(), argoWorkflows);
-  for (auto &argoWorkflow : argoWorkflows) {
-    std::cout << argoWorkflow << "\n";
-  }
+    ///
+    // RUN
+    auto run = std::make_unique<proc_comm_lib_argo::Run>();
+    run->moveApplication(application);
+    std::list<std::string> argoWorkflows{};
+    lib->create_workflow_yaml(run.get(), argoWorkflows);
+    for (auto &argoWorkflow : argoWorkflows) {
+        std::cout << argoWorkflow << "\n";
+    }
+
 
   return 0;
 }
+
+
+
