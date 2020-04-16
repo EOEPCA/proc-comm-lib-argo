@@ -1,0 +1,100 @@
+def artserver = Artifactory.server('repository.terradue.com')
+def buildInfo = Artifactory.newBuildInfo()
+buildInfo.env.capture = true
+
+node('centos7-pc-develop') {
+
+  stage('Dependencies'){
+        def disablerepo=disableRepository(env.BRANCH_NAME)
+        echo env.BRANCH_NAME
+        sh "echo ${disablerepo}"
+        sh "sudo yum clean all; sudo yum install -y cgicc --disablerepo=${disablerepo}"
+    }
+
+  stage('Init') {
+    checkout scm
+    echo env.BRANCH_NAME
+    def flavor = flavor(env.BRANCH_NAME)
+    sh "cd build-${flavor};chmod +x pre-build.sh;./pre-build.sh"
+  }
+
+  stage('Build') {
+    def flavor = flavor(env.BRANCH_NAME)
+    sh "cd build-${flavor};make"
+  }
+
+  stage('Package') {
+    def flavor = flavor(env.BRANCH_NAME)
+    sh "cd build-${flavor};./buildrpm.sh ${env.BRANCH_NAME} ${env.BUILD_NUMBER}"
+  }
+
+  stage('Publish') {
+    def flavor = flavor(env.BRANCH_NAME)
+    def rpmFilename = sh(
+      script: "ls build-${flavor}/codelithic*.rpm",
+      returnStdout: true
+    )
+
+	def repositoryName=repoName(env.BRANCH_NAME)
+
+    def pattern = rpmFilename.replaceAll( "\\n", "" )
+    def repodir = rpmdir(pattern)
+    def uploadSpec = """{
+      "files": [
+        {
+          "pattern": "${pattern}",
+          "target": "${repositoryName}/${repodir}"
+        }
+     ]
+    }"""
+    def buildInfo2 = artserver.upload(uploadSpec)
+    buildInfo.append(buildInfo2)
+    artserver.publishBuildInfo(buildInfo)
+  }
+}
+
+// Pulls the release decision out of the branch name
+def flavor(branchName) {
+
+  def matcherMt = (env.BRANCH_NAME =~ /multiThread/)
+  if (matcherMt.matches())
+    return "release"
+
+  def matcher = (env.BRANCH_NAME =~ /master/)
+  if (matcher.matches())
+    return "release"
+  
+	return "debug"
+}
+
+def disableRepository(branchName) {
+
+  def matcherMt = (env.BRANCH_NAME =~ /multiThread/)
+  if (matcherMt.matches())
+    return "terradue-testing-el7"
+
+  def matcher = (env.BRANCH_NAME =~ /master/)
+  if (matcher.matches())
+    return "terradue-testing-el7"
+
+ return "terradue-stable-el7"
+}
+
+def repoName(branchName){
+
+	def matcherMt = (branchName =~ /multiThread/)
+	 if (matcherMt.matches())
+	   return env.YUM_REPO_STABLE
+
+	def matcher = (branchName =~ /master/)
+	 if (matcher.matches())
+	   return env.YUM_REPO_STABLE
+
+	 return env.YUM_REPO_TESTING
+}
+
+def rpmdir(rpmfilename) {
+  def matcher = (rpmfilename =~ /(.*)\/(.*)-(.*)-(?:([^.]+)\.([^.]+)?)\.([^.]+)(\.rpm)/)
+  assert matcher.matches()
+  matcher[0][5]+"/"+matcher[0][6]+"/"+matcher[0][2]+"/"+matcher[0][3]+"/"+matcher[0][2]+"-"+matcher[0][3]+"-"+matcher[0][4]+"."+matcher[0][5]+"."+matcher[0][6]+".rpm"
+}

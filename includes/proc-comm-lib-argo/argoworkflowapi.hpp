@@ -10,28 +10,28 @@
 #include <eoepca/argo/application.hpp>
 #include <string>
 #include <list>
+#include "../../src/model/workflow.hpp"
+
 
 namespace proc_comm_lib_argo {
 
 
-
-    class argo_workflow_api {
-
-    };
-
-
-    class WorkflowUtils {
-
+    class WorkflowApi {
 
     public:
-        WorkflowUtils() {};
+        WorkflowApi() {};
 
-        ~WorkflowUtils() {};
+        ~WorkflowApi() {};
 
+        proc_comm_lib_argo::model::Workflow listWorkflows(std::string name = "default");
 
-        // create workflow yaml from application class
-        void  create_workflow_yaml(Run* run,std::list<std::string>& argoWorkflows);
+        proc_comm_lib_argo::model::Workflow submitWorkflow(Application *application, std::string name = "default");
 
+        proc_comm_lib_argo::model::Workflow
+        getWorkflowFromName(std::string_view workflow_name, std::string name = "default");
+
+        proc_comm_lib_argo::model::Workflow
+        deleteWorkflowFromName(std::string_view workflow_name, std::string name = "default");
     };
 }
 

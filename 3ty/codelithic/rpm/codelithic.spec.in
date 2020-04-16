@@ -1,0 +1,65 @@
+
+Summary:        @CPACK_PACKAGE_NAME@
+Name:           @CPACK_PACKAGE_NAME@
+Version:        @CPACK_PACKAGE_VERSION@
+Release:        CPACKPACKAGERELEASE
+License:        (c) 2011 Terradue s.r.l.
+Distribution:	Terradue 2017
+Vendor:			Terradue s.r.l.
+URL:			http://www.terradue.com/
+Packager:		Terradue
+
+Requires: epel-release
+Requires: fcgi-devel
+Requires: fcgi
+Requires: cgicc
+
+Group:  scoop
+#Buildroot: @CMAKE_CURRENT_BINARY_DIR@/_CPack_Packages/Linux/RPM/@CPACK_PACKAGE_FILE_NAME@
+
+ 
+%define _rpmdir @RPM_BASE@
+%define _rpmfilename @CPACK_PACKAGE_FILE_NAME@.rpm
+%define _unpackaged_files_terminate_build 0
+%define _topdir @RPM_BASE@
+
+ 
+%description
+Framework  MVC for FastCgi c++
+
+%prep
+
+%install
+if [ -e $RPM_BUILD_ROOT ];
+then
+  rm -Rf $RPM_BUILD_ROOT
+fi
+
+mkdir -p  ${RPM_BUILD_ROOT}/opt/codelithic/libs
+mkdir -p  ${RPM_BUILD_ROOT}/opt/codelithic/include
+mkdir -p  ${RPM_BUILD_ROOT}/etc/ld.so.conf.d
+
+cp @CPACK_SOURCE_PATH@/rpm/codelithic.libconf.conf  ${RPM_BUILD_ROOT}/etc/ld.so.conf.d/codelithic.libconf.conf 
+
+cp @CMAKE_CURRENT_BINARY_DIR@/libcodelithic.so.@CPACK_PACKAGE_VERSION@ ${RPM_BUILD_ROOT}/opt/codelithic/libs/libcodelithic.so.@CPACK_PACKAGE_VERSION@
+cp -r @CPACK_SOURCE_PATH@/src/codelithic/include/codelithic ${RPM_BUILD_ROOT}/opt/codelithic/include/
+
+
+ln -s /opt/codelithic/libs/libcodelithic.so.@CPACK_PACKAGE_VERSION@ ${RPM_BUILD_ROOT}/opt/codelithic/libs/libcodelithic.so
+ln -s /opt/codelithic/libs/libcodelithic.so.@CPACK_PACKAGE_VERSION@ ${RPM_BUILD_ROOT}/opt/codelithic/libs/libcodelithic.so.1
+
+%files
+
+%defattr(644,root,root,755)
+ "/etc/ld.so.conf.d/codelithic.libconf.conf"
+ "/opt/codelithic/"
+ "/opt/codelithic/libs/"
+ "/opt/codelithic/include"
+
+%post
+
+ldconfig
+
+ 
+%changelog
+

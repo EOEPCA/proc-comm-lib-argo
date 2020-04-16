@@ -2,8 +2,8 @@
 // Created by bla on 07/04/20.
 //
 
-#ifndef PROC_COMM_LIB_ARGO_WORKFLOW_HPP
-#define PROC_COMM_LIB_ARGO_WORKFLOW_HPP
+#ifndef proc_comm_lib_argo_WORKFLOW_HPP
+#define proc_comm_lib_argo_WORKFLOW_HPP
 
 
 //  To parse this JSON data, first install
@@ -14,8 +14,7 @@
 //
 //     Workflow data = nlohmann::json::parse(jsonString);
 
-#ifndef NLOHMANN_OPT_HELPER
-#define NLOHMANN_OPT_HELPER
+
 
 #include <optional>
 #include <stdexcept>
@@ -34,9 +33,9 @@ namespace nlohmann {
         }
     };
 }
-#endif
 
-namespace proc_comm_lib_argo {
+
+namespace proc_comm_lib_argo::model {
     using nlohmann::json;
 
     inline json get_untyped(const json & j, const char * property) {
@@ -406,66 +405,66 @@ namespace proc_comm_lib_argo {
 }
 
 namespace nlohmann {
-    void from_json(const json & j, proc_comm_lib_argo::Labels & x);
-    void to_json(json & j, const proc_comm_lib_argo::Labels & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Labels & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Labels & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Metadata & x);
-    void to_json(json & j, const proc_comm_lib_argo::Metadata & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Metadata & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Metadata & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Arguments & x);
-    void to_json(json & j, const proc_comm_lib_argo::Arguments & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Arguments & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Arguments & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Container & x);
-    void to_json(json & j, const proc_comm_lib_argo::Container & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Container & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Container & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Step & x);
-    void to_json(json & j, const proc_comm_lib_argo::Step & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Step & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Step & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Template & x);
-    void to_json(json & j, const proc_comm_lib_argo::Template & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Template & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Template & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Spec & x);
-    void to_json(json & j, const proc_comm_lib_argo::Spec & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Spec & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Spec & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Condition & x);
-    void to_json(json & j, const proc_comm_lib_argo::Condition & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Condition & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Condition & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Outputs & x);
-    void to_json(json & j, const proc_comm_lib_argo::Outputs & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Outputs & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Outputs & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Node & x);
-    void to_json(json & j, const proc_comm_lib_argo::Node & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Node & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Node & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Status & x);
-    void to_json(json & j, const proc_comm_lib_argo::Status & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Status & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Status & x);
 
-    void from_json(const json & j, proc_comm_lib_argo::Workflow & x);
-    void to_json(json & j, const proc_comm_lib_argo::Workflow & x);
+    void from_json(const json & j, proc_comm_lib_argo::model::Workflow & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Workflow & x);
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Labels& x) {
-        x.set_workflows_argoproj_io_completed(proc_comm_lib_argo::get_optional<std::string>(j, "workflows.argoproj.io/completed"));
-        x.set_workflows_argoproj_io_phase(proc_comm_lib_argo::get_optional<std::string>(j, "workflows.argoproj.io/phase"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Labels& x) {
+        x.set_workflows_argoproj_io_completed(proc_comm_lib_argo::model::get_optional<std::string>(j, "workflows.argoproj.io/completed"));
+        x.set_workflows_argoproj_io_phase(proc_comm_lib_argo::model::get_optional<std::string>(j, "workflows.argoproj.io/phase"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Labels & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Labels & x) {
         j = json::object();
         j["workflows.argoproj.io/completed"] = x.get_workflows_argoproj_io_completed();
         j["workflows.argoproj.io/phase"] = x.get_workflows_argoproj_io_phase();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Metadata& x) {
-        x.set_creation_timestamp(proc_comm_lib_argo::get_optional<std::string>(j, "creationTimestamp"));
-        x.set_generate_name(proc_comm_lib_argo::get_optional<std::string>(j, "generateName"));
-        x.set_generation(proc_comm_lib_argo::get_optional<int64_t>(j, "generation"));
-        x.set_labels(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Labels>(j, "labels"));
-        x.set_name(proc_comm_lib_argo::get_optional<std::string>(j, "name"));
-        x.set_metadata_namespace(proc_comm_lib_argo::get_optional<std::string>(j, "namespace"));
-        x.set_resource_version(proc_comm_lib_argo::get_optional<std::string>(j, "resourceVersion"));
-        x.set_self_link(proc_comm_lib_argo::get_optional<std::string>(j, "selfLink"));
-        x.set_uid(proc_comm_lib_argo::get_optional<std::string>(j, "uid"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Metadata& x) {
+        x.set_creation_timestamp(proc_comm_lib_argo::model::get_optional<std::string>(j, "creationTimestamp"));
+        x.set_generate_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "generateName"));
+        x.set_generation(proc_comm_lib_argo::model::get_optional<int64_t>(j, "generation"));
+        x.set_labels(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Labels>(j, "labels"));
+        x.set_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "name"));
+        x.set_metadata_namespace(proc_comm_lib_argo::model::get_optional<std::string>(j, "namespace"));
+        x.set_resource_version(proc_comm_lib_argo::model::get_optional<std::string>(j, "resourceVersion"));
+        x.set_self_link(proc_comm_lib_argo::model::get_optional<std::string>(j, "selfLink"));
+        x.set_uid(proc_comm_lib_argo::model::get_optional<std::string>(j, "uid"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Metadata & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Metadata & x) {
         j = json::object();
         j["creationTimestamp"] = x.get_creation_timestamp();
         j["generateName"] = x.get_generate_name();
@@ -478,23 +477,23 @@ namespace nlohmann {
         j["uid"] = x.get_uid();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Arguments& x) {
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Arguments& x) {
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Arguments & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Arguments & x) {
         j = json::object();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Container& x) {
-        x.set_args(proc_comm_lib_argo::get_optional<std::vector<std::string>>(j, "args"));
-        x.set_command(proc_comm_lib_argo::get_optional<std::vector<std::string>>(j, "command"));
-        x.set_image(proc_comm_lib_argo::get_optional<std::string>(j, "image"));
-        x.set_name(proc_comm_lib_argo::get_optional<std::string>(j, "name"));
-        x.set_resources(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "resources"));
-        x.set_source(proc_comm_lib_argo::get_optional<std::string>(j, "source"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Container& x) {
+        x.set_args(proc_comm_lib_argo::model::get_optional<std::vector<std::string>>(j, "args"));
+        x.set_command(proc_comm_lib_argo::model::get_optional<std::vector<std::string>>(j, "command"));
+        x.set_image(proc_comm_lib_argo::model::get_optional<std::string>(j, "image"));
+        x.set_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "name"));
+        x.set_resources(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "resources"));
+        x.set_source(proc_comm_lib_argo::model::get_optional<std::string>(j, "source"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Container & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Container & x) {
         j = json::object();
         j["args"] = x.get_args();
         j["command"] = x.get_command();
@@ -504,14 +503,14 @@ namespace nlohmann {
         j["source"] = x.get_source();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Step& x) {
-        x.set_arguments(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "arguments"));
-        x.set_name(proc_comm_lib_argo::get_optional<std::string>(j, "name"));
-        x.set_step_template(proc_comm_lib_argo::get_optional<std::string>(j, "template"));
-        x.set_when(proc_comm_lib_argo::get_optional<std::string>(j, "when"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Step& x) {
+        x.set_arguments(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "arguments"));
+        x.set_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "name"));
+        x.set_step_template(proc_comm_lib_argo::model::get_optional<std::string>(j, "template"));
+        x.set_when(proc_comm_lib_argo::model::get_optional<std::string>(j, "when"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Step & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Step & x) {
         j = json::object();
         j["arguments"] = x.get_arguments();
         j["name"] = x.get_name();
@@ -519,18 +518,18 @@ namespace nlohmann {
         j["when"] = x.get_when();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Template& x) {
-        x.set_arguments(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "arguments"));
-        x.set_inputs(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "inputs"));
-        x.set_metadata(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "metadata"));
-        x.set_name(proc_comm_lib_argo::get_optional<std::string>(j, "name"));
-        x.set_outputs(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "outputs"));
-        x.set_steps(proc_comm_lib_argo::get_optional<std::vector<std::vector<proc_comm_lib_argo::Step>>>(j, "steps"));
-        x.set_script(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Container>(j, "script"));
-        x.set_container(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Container>(j, "container"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Template& x) {
+        x.set_arguments(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "arguments"));
+        x.set_inputs(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "inputs"));
+        x.set_metadata(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "metadata"));
+        x.set_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "name"));
+        x.set_outputs(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "outputs"));
+        x.set_steps(proc_comm_lib_argo::model::get_optional<std::vector<std::vector<proc_comm_lib_argo::model::Step>>>(j, "steps"));
+        x.set_script(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Container>(j, "script"));
+        x.set_container(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Container>(j, "container"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Template & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Template & x) {
         j = json::object();
         j["arguments"] = x.get_arguments();
         j["inputs"] = x.get_inputs();
@@ -542,56 +541,56 @@ namespace nlohmann {
         j["container"] = x.get_container();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Spec& x) {
-        x.set_arguments(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Arguments>(j, "arguments"));
-        x.set_entrypoint(proc_comm_lib_argo::get_optional<std::string>(j, "entrypoint"));
-        x.set_templates(proc_comm_lib_argo::get_optional<std::vector<proc_comm_lib_argo::Template>>(j, "templates"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Spec& x) {
+        x.set_arguments(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Arguments>(j, "arguments"));
+        x.set_entrypoint(proc_comm_lib_argo::model::get_optional<std::string>(j, "entrypoint"));
+        x.set_templates(proc_comm_lib_argo::model::get_optional<std::vector<proc_comm_lib_argo::model::Template>>(j, "templates"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Spec & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Spec & x) {
         j = json::object();
         j["arguments"] = x.get_arguments();
         j["entrypoint"] = x.get_entrypoint();
         j["templates"] = x.get_templates();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Condition& x) {
-        x.set_status(proc_comm_lib_argo::get_optional<std::string>(j, "status"));
-        x.set_type(proc_comm_lib_argo::get_optional<std::string>(j, "type"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Condition& x) {
+        x.set_status(proc_comm_lib_argo::model::get_optional<std::string>(j, "status"));
+        x.set_type(proc_comm_lib_argo::model::get_optional<std::string>(j, "type"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Condition & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Condition & x) {
         j = json::object();
         j["status"] = x.get_status();
         j["type"] = x.get_type();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Outputs& x) {
-        x.set_result(proc_comm_lib_argo::get_optional<std::string>(j, "result"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Outputs& x) {
+        x.set_result(proc_comm_lib_argo::model::get_optional<std::string>(j, "result"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Outputs & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Outputs & x) {
         j = json::object();
         j["result"] = x.get_result();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Node& x) {
-        x.set_children(proc_comm_lib_argo::get_optional<std::vector<std::string>>(j, "children"));
-        x.set_display_name(proc_comm_lib_argo::get_optional<std::string>(j, "displayName"));
-        x.set_finished_at(proc_comm_lib_argo::get_optional<std::string>(j, "finishedAt"));
-        x.set_id(proc_comm_lib_argo::get_optional<std::string>(j, "id"));
-        x.set_name(proc_comm_lib_argo::get_optional<std::string>(j, "name"));
-        x.set_outbound_nodes(proc_comm_lib_argo::get_optional<std::vector<std::string>>(j, "outboundNodes"));
-        x.set_phase(proc_comm_lib_argo::get_optional<std::string>(j, "phase"));
-        x.set_started_at(proc_comm_lib_argo::get_optional<std::string>(j, "startedAt"));
-        x.set_template_name(proc_comm_lib_argo::get_optional<std::string>(j, "templateName"));
-        x.set_type(proc_comm_lib_argo::get_optional<std::string>(j, "type"));
-        x.set_boundary_id(proc_comm_lib_argo::get_optional<std::string>(j, "boundaryID"));
-        x.set_outputs(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Outputs>(j, "outputs"));
-        x.set_message(proc_comm_lib_argo::get_optional<std::string>(j, "message"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Node& x) {
+        x.set_children(proc_comm_lib_argo::model::get_optional<std::vector<std::string>>(j, "children"));
+        x.set_display_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "displayName"));
+        x.set_finished_at(proc_comm_lib_argo::model::get_optional<std::string>(j, "finishedAt"));
+        x.set_id(proc_comm_lib_argo::model::get_optional<std::string>(j, "id"));
+        x.set_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "name"));
+        x.set_outbound_nodes(proc_comm_lib_argo::model::get_optional<std::vector<std::string>>(j, "outboundNodes"));
+        x.set_phase(proc_comm_lib_argo::model::get_optional<std::string>(j, "phase"));
+        x.set_started_at(proc_comm_lib_argo::model::get_optional<std::string>(j, "startedAt"));
+        x.set_template_name(proc_comm_lib_argo::model::get_optional<std::string>(j, "templateName"));
+        x.set_type(proc_comm_lib_argo::model::get_optional<std::string>(j, "type"));
+        x.set_boundary_id(proc_comm_lib_argo::model::get_optional<std::string>(j, "boundaryID"));
+        x.set_outputs(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Outputs>(j, "outputs"));
+        x.set_message(proc_comm_lib_argo::model::get_optional<std::string>(j, "message"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Node & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Node & x) {
         j = json::object();
         j["children"] = x.get_children();
         j["displayName"] = x.get_display_name();
@@ -608,15 +607,15 @@ namespace nlohmann {
         j["message"] = x.get_message();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Status& x) {
-        x.set_conditions(proc_comm_lib_argo::get_optional<std::vector<proc_comm_lib_argo::Condition>>(j, "conditions"));
-        x.set_finished_at(proc_comm_lib_argo::get_optional<std::string>(j, "finishedAt"));
-        x.set_nodes(proc_comm_lib_argo::get_optional<std::map<std::string, proc_comm_lib_argo::Node>>(j, "nodes"));
-        x.set_phase(proc_comm_lib_argo::get_optional<std::string>(j, "phase"));
-        x.set_started_at(proc_comm_lib_argo::get_optional<std::string>(j, "startedAt"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Status& x) {
+        x.set_conditions(proc_comm_lib_argo::model::get_optional<std::vector<proc_comm_lib_argo::model::Condition>>(j, "conditions"));
+        x.set_finished_at(proc_comm_lib_argo::model::get_optional<std::string>(j, "finishedAt"));
+        x.set_nodes(proc_comm_lib_argo::model::get_optional<std::map<std::string, proc_comm_lib_argo::model::Node>>(j, "nodes"));
+        x.set_phase(proc_comm_lib_argo::model::get_optional<std::string>(j, "phase"));
+        x.set_started_at(proc_comm_lib_argo::model::get_optional<std::string>(j, "startedAt"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Status & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Status & x) {
         j = json::object();
         j["conditions"] = x.get_conditions();
         j["finishedAt"] = x.get_finished_at();
@@ -625,15 +624,15 @@ namespace nlohmann {
         j["startedAt"] = x.get_started_at();
     }
 
-    inline void from_json(const json & j, proc_comm_lib_argo::Workflow& x) {
-        x.set_api_version(proc_comm_lib_argo::get_optional<std::string>(j, "apiVersion"));
-        x.set_kind(proc_comm_lib_argo::get_optional<std::string>(j, "kind"));
-        x.set_metadata(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Metadata>(j, "metadata"));
-        x.set_spec(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Spec>(j, "spec"));
-        x.set_status(proc_comm_lib_argo::get_optional<proc_comm_lib_argo::Status>(j, "status"));
+    inline void from_json(const json & j, proc_comm_lib_argo::model::Workflow& x) {
+        x.set_api_version(proc_comm_lib_argo::model::get_optional<std::string>(j, "apiVersion"));
+        x.set_kind(proc_comm_lib_argo::model::get_optional<std::string>(j, "kind"));
+        x.set_metadata(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Metadata>(j, "metadata"));
+        x.set_spec(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Spec>(j, "spec"));
+        x.set_status(proc_comm_lib_argo::model::get_optional<proc_comm_lib_argo::model::Status>(j, "status"));
     }
 
-    inline void to_json(json & j, const proc_comm_lib_argo::Workflow & x) {
+    inline void to_json(json & j, const proc_comm_lib_argo::model::Workflow & x) {
         j = json::object();
         j["apiVersion"] = x.get_api_version();
         j["kind"] = x.get_kind();
@@ -644,4 +643,4 @@ namespace nlohmann {
 }
 
 
-#endif //PROC_COMM_LIB_ARGO_WORKFLOW_HPP
+#endif //proc_comm_lib_argo::model_WORKFLOW_HPP

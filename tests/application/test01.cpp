@@ -91,3 +91,30 @@ TEST(TEST1_WorkflowGeneration, With_stage_in) {
     EXPECT_EQ(yamlFile, expected_yamlfile);
 
 }
+
+
+TEST(TEST1_WorkflowGeneration, From_app) {
+
+
+    auto lib = getLibArgo();
+
+    std::string expected_yamlfile;
+    std::string filename = "tests/application/data/test1_workflow.yaml";
+    std::ifstream infile(filename);
+    if (infile.good()) {
+        std::stringstream sBuffer;
+        sBuffer << infile.rdbuf();
+        expected_yamlfile=sBuffer.str();
+    }
+
+
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+    application->setDockerImage("centos:7");
+    application->addParam("message","Hello World");
+    application->setApplication("print(\"{{workflow.parameters.message}}\")");
+
+    std::string argoWorkflow;
+    lib->create_workflow_yaml_from_app(application.get(), argoWorkflow);
+
+    EXPECT_EQ(argoWorkflow, expected_yamlfile);
+}

@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>test</title>
+</head>
+<body style="background-color: blueviolet;color: magenta">
+    IL BODY &{CIAO}
+
+
+	&[S_LOGOUT]
+	<ul class="nav navbar-nav navbar-right">
+		<li><a href="&{SITE}/logout">Log out &{USER_DEFINITION}</a></li>
+	</ul>
+	&[/S_LOGOUT]
+
+</body>
+</html>
+

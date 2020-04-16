@@ -1,0 +1,16 @@
+$[ROW_PROJECT_CONTAINER]
+<div class="applicationsList">
+	&{ALLROW_PROJECTS}
+</div>
+$[/ROW_PROJECT_CONTAINER]$[ROW_PROJECT]<div class="applicationItem">
+	<h3><a class="ItemTitle" href="&{SITE}/projects/deploy?path=&{id_path}">&{groupId} "&{artifactId}"  &{versionId}  &{applicationXml}</a></h3>
+	<small>
+		<b>last Modified</b>
+		<small>&{lastModified}</small>
+	</small>
+	<div class="labels">
+		<span class="label label-primary">service: &{STATUS}</span> 
+		<span class="label label-primary">Coordinator: &{STATUS_COORDINATOR}</span>		 
+	</div>	
+	<a  href="&{SITE}/projects/deploy?path=&{id_path}" class="btnStatus btn btn-primary btn-sm"> Edit application</a>	
+</div>$[/ROW_PROJECT]
