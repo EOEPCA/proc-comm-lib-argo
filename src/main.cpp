@@ -39,13 +39,9 @@ int main() {
     application->setApplication("print(\"{{workflow.parameters.message}}\")");
 
 
-    proc_comm_lib_argo::Workflow_utils::prettyPrintJson("test");
-
-    // std::cout<<proc_comm_lib_argo::WorkflowGenerator::create_workflow_yaml(application.get());
-
-    //proc_comm_lib_argo::WorkflowApi api{};
-    //proc_comm_lib_argo::model::Workflow workflow = api.submitWorkflow(application.get());
-    //std::cout<< "Worklflow name: " << workflow.get_metadata()->get_name().get();
+    proc_comm_lib_argo::WorkflowApi api{};
+    proc_comm_lib_argo::model::Workflow workflow = api.submitWorkflow(application.get());
+    std::cout<< "Worklflow name: " << workflow.get_metadata()->get_name().get();
 
   return 0;
 }
