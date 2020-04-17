@@ -49,6 +49,25 @@ SET(MODS_LIBS
         z m dl
         )
 
-add_executable(${LIB_TEST_NAME} ${test_sources})
-target_link_libraries(${LIB_TEST_NAME}  ${MODS_LIBS} gtest_main yaml-cpp)
+
+## mockserver
+add_subdirectory(3ty/httpmockserver)
+include_directories(3ty/httpmockserver/include)
+
+
+find_library(
+        MHD_LIBRARY
+        NAMES libmicrohttpd.a microhttpd libmicrohttpd
+        PATHS "${XMRIG_DEPS}" ENV "XMRIG_DEPS"
+        PATH_SUFFIXES "lib"
+        DOC "microhttpd library"
+        NO_DEFAULT_PATH
+)
+find_library(MHD_LIBRARY NAMES microhttpd libmicrohttpd)
+set(MHD_INCLUDE_DIRS ${MHD_INCLUDE_DIR})
+set(MHD_LIBRARIES ${MHD_LIBRARY})
+
+add_executable(${LIB_TEST_NAME} ${test_sources} ${MHD_LIBRARIES})
+target_link_libraries(${LIB_TEST_NAME}  ${MODS_LIBS}  gtest_main yaml-cpp httpmockserver cpr beeblebrox ${MHD_LIBRARIES})
 add_test(NAME eoepca_test_run COMMAND ${LIB_TEST_NAME})
+

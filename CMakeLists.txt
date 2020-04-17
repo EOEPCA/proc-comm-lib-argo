@@ -44,6 +44,8 @@ SET(LIB_SRC
         includes/proc-comm-lib-argo/workflowutils.hpp
         src/model/workflow.cpp
         src/model/workflow.hpp
+        src/model/workflowlist.cpp
+        src/model/workflowlist.hpp
         src/eoepca_lib_argo.cpp
         )
 
@@ -55,7 +57,7 @@ SET(MODS_LIBS
 add_library(eoepcaargo SHARED ${INCLUDE_LIB_SRC} ${LIB_SRC})
 TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp  )
 
-add_executable(proc-comm-lib-argo ${src_main})
+add_executable(proc-comm-lib-argo ${src_main} ${LIB_SRC})
 
 target_link_libraries(proc-comm-lib-argo yaml-cpp beeblebrox y2j ${MODS_LIBS})
 

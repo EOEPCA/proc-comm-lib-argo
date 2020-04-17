@@ -402,9 +402,112 @@ namespace proc_comm_lib_argo::model {
         std::shared_ptr<Status> get_status() const { return status; }
         void set_status(std::shared_ptr<Status> value) { this->status = value; }
     };
+
+
+    enum class Phase : int { ERROR, FAILED, SKIPPED, SUCCEEDED };
+    enum class ApiVersion : int { ARGOPROJ_IO_V1_ALPHA1 };
+    enum class Kind : int { WORKFLOW };
+
+    class StatusClass {
+    public:
+        StatusClass() = default;
+        virtual ~StatusClass() = default;
+
+    private:
+        std::shared_ptr<std::vector<Condition>> conditions;
+        std::shared_ptr<std::string> finished_at;
+        std::shared_ptr<std::map<std::string, Node>> nodes;
+        std::shared_ptr<Phase> phase;
+        std::shared_ptr<std::string> started_at;
+        std::shared_ptr<std::string> message;
+
+    public:
+        std::shared_ptr<std::vector<Condition>> get_conditions() const { return conditions; }
+        void set_conditions(std::shared_ptr<std::vector<Condition>> value) { this->conditions = value; }
+
+        std::shared_ptr<std::string> get_finished_at() const { return finished_at; }
+        void set_finished_at(std::shared_ptr<std::string> value) { this->finished_at = value; }
+
+        std::shared_ptr<std::map<std::string, Node>> get_nodes() const { return nodes; }
+        void set_nodes(std::shared_ptr<std::map<std::string, Node>> value) { this->nodes = value; }
+
+        std::shared_ptr<Phase> get_phase() const { return phase; }
+        void set_phase(std::shared_ptr<Phase> value) { this->phase = value; }
+
+        std::shared_ptr<std::string> get_started_at() const { return started_at; }
+        void set_started_at(std::shared_ptr<std::string> value) { this->started_at = value; }
+
+        std::shared_ptr<std::string> get_message() const { return message; }
+        void set_message(std::shared_ptr<std::string> value) { this->message = value; }
+    };
+
+    class Item {
+    public:
+        Item() = default;
+        virtual ~Item() = default;
+
+    private:
+        std::shared_ptr<ApiVersion> api_version;
+        std::shared_ptr<Kind> kind;
+        std::shared_ptr<Metadata> metadata;
+        std::shared_ptr<Spec> spec;
+        std::shared_ptr<StatusClass> status;
+
+    public:
+        std::shared_ptr<ApiVersion> get_api_version() const { return api_version; }
+        void set_api_version(std::shared_ptr<ApiVersion> value) { this->api_version = value; }
+
+        std::shared_ptr<Kind> get_kind() const { return kind; }
+        void set_kind(std::shared_ptr<Kind> value) { this->kind = value; }
+
+        std::shared_ptr<Metadata> get_metadata() const { return metadata; }
+        void set_metadata(std::shared_ptr<Metadata> value) { this->metadata = value; }
+
+        std::shared_ptr<Spec> get_spec() const { return spec; }
+        void set_spec(std::shared_ptr<Spec> value) { this->spec = value; }
+
+        std::shared_ptr<StatusClass> get_status() const { return status; }
+        void set_status(std::shared_ptr<StatusClass> value) { this->status = value; }
+    };
+
+
+
+//    class WorkflowList {
+//    public:
+//        WorkflowList() = default;
+//        virtual ~WorkflowList() = default;
+//
+//    private:
+//        std::shared_ptr<ApiVersion> api_version;
+//        std::shared_ptr<std::vector<Item>> items;
+//        std::shared_ptr<std::string> kind;
+//        std::shared_ptr<Metadata> metadata;
+//
+//    public:
+//        std::shared_ptr<ApiVersion> get_api_version() const { return api_version; }
+//        void set_api_version(std::shared_ptr<ApiVersion> value) { this->api_version = value; }
+//
+//        std::shared_ptr<std::vector<Item>> get_items() const { return items; }
+//        void set_items(std::shared_ptr<std::vector<Item>> value) { this->items = value; }
+//
+//        std::shared_ptr<std::string> get_kind() const { return kind; }
+//        void set_kind(std::shared_ptr<std::string> value) { this->kind = value; }
+//
+//        std::shared_ptr<Metadata> get_metadata() const { return metadata; }
+//        void set_metadata(std::shared_ptr<Metadata> value) { this->metadata = value; }
+//    };
 }
 
+
+
+
+
+
+
 namespace nlohmann {
+
+
+
     void from_json(const json & j, proc_comm_lib_argo::model::Labels & x);
     void to_json(json & j, const proc_comm_lib_argo::model::Labels & x);
 
@@ -440,6 +543,12 @@ namespace nlohmann {
 
     void from_json(const json & j, proc_comm_lib_argo::model::Workflow & x);
     void to_json(json & j, const proc_comm_lib_argo::model::Workflow & x);
+
+    //void from_json(const json & j, proc_comm_lib_argo::model::WorkflowList & x);
+    //void to_json(json & j, const proc_comm_lib_argo::model::WorkflowList & x);
+
+    void from_json(const json & j, proc_comm_lib_argo::model::Item & x);
+    void to_json(json & j, const proc_comm_lib_argo::model::Item & x);
 
     inline void from_json(const json & j, proc_comm_lib_argo::model::Labels& x) {
         x.set_workflows_argoproj_io_completed(proc_comm_lib_argo::model::get_optional<std::string>(j, "workflows.argoproj.io/completed"));

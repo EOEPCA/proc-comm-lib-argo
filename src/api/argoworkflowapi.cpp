@@ -11,6 +11,8 @@
 #include <beeblebrox/includes/zaphodhands/zaphodhand.hpp>
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
+#include "../model/workflowlist.hpp"
+
 
 namespace proc_comm_lib_argo {
 
@@ -82,11 +84,8 @@ namespace proc_comm_lib_argo {
         document.Accept(writer);
         std::string worlflowJson = buffer.GetString();
         worlflowJson = "{\"workflow\":" + worlflowJson + "}";
-        //printf("JSON result:\n%s\n", buffer.GetString());
 
-        std::cout<< buffer.GetString();
         std::string response;
-
         postHttp("http://127.0.0.1:2746/api/v1/workflows/"+argo_namespace,worlflowJson,response);
         proc_comm_lib_argo::model::Workflow workflow = nlohmann::json::parse(response);
 
@@ -104,7 +103,13 @@ namespace proc_comm_lib_argo {
         return proc_comm_lib_argo::model::Workflow();
     }
 
-    proc_comm_lib_argo::model::Workflow WorkflowApi::listWorkflows(std::string argo_namespace) {
-        return proc_comm_lib_argo::model::Workflow();
-    }
+//    model::WorkflowList WorkflowApi::listWorkflows(std::string argo_namespace) {
+//
+//        std::string response;
+//        getHttp("http://127.0.0.1:2746/api/v1/workflows/"+argo_namespace,response);
+//        proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
+//
+//
+//        return modelbb::WorkflowList();
+//    }
 }

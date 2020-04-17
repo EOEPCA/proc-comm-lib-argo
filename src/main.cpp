@@ -40,8 +40,10 @@ int main() {
 
 
     proc_comm_lib_argo::WorkflowApi api{};
-    proc_comm_lib_argo::model::Workflow workflow = api.submitWorkflow(application.get());
-    std::cout<< "Worklflow name: " << workflow.get_metadata()->get_name().get();
+    //proc_comm_lib_argo::model::Workflow workflow = api.submitWorkflow(application.get());
+    //std::cout<< "Worklflow name: " << workflow.get_metadata()->get_name()->c_str();
+
+   // auto list = api.listWorkflows();
 
   return 0;
 }
