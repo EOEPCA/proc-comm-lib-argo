@@ -11,7 +11,7 @@
 #include <beeblebrox/includes/zaphodhands/zaphodhand.hpp>
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
-#include "../model/workflowlist.hpp"
+
 
 
 namespace proc_comm_lib_argo {
@@ -103,13 +103,13 @@ namespace proc_comm_lib_argo {
         return proc_comm_lib_argo::model::Workflow();
     }
 
-//    model::WorkflowList WorkflowApi::listWorkflows(std::string argo_namespace) {
-//
-//        std::string response;
-//        getHttp("http://127.0.0.1:2746/api/v1/workflows/"+argo_namespace,response);
-//        proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
-//
-//
-//        return modelbb::WorkflowList();
-//    }
+    model::WorkflowList WorkflowApi::listWorkflows(std::string argo_namespace) {
+
+        std::string response;
+        getHttp("http://localhost:8080/apis/argoproj.io/v1alpha1/namespaces/"+argo_namespace+"/workflows/",response);
+        proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
+
+
+        return workflowList;
+    }
 }

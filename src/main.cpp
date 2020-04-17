@@ -41,9 +41,18 @@ int main() {
 
     proc_comm_lib_argo::WorkflowApi api{};
     //proc_comm_lib_argo::model::Workflow workflow = api.submitWorkflow(application.get());
-    //std::cout<< "Worklflow name: " << workflow.get_metadata()->get_name()->c_str();
+    //std::cout<< "Worklflow name: " << workflow.get_metadata()->get_creation_timestamp()->c_str();
 
-   // auto list = api.listWorkflows();
+
+    auto list = api.listWorkflows();
+    std::cout<< "Number of workflows: " << list.get_items()->size()<< std::endl;
+    std::cout<< "Name of first workflow: " << list.get_items()->front().get_metadata()->get_name()->c_str()<< std::endl;
+    std::cout<< "Name of first workflow: " << list.get_items()->front().get_metadata()->get_metadata_namespace()->c_str()<< std::endl;
+
+    std::cout<< "Api version: " << list.get_api_version()->c_str();
+    //std::cout<< "Kind: " << list.get_kind().get()->c_str();
+
+
 
   return 0;
 }

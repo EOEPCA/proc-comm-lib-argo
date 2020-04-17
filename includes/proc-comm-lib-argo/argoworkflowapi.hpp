@@ -23,7 +23,7 @@ namespace proc_comm_lib_argo {
 
         ~WorkflowApi() {};
 
-        //model::WorkflowList listWorkflows(std::string name = "default");
+        model::WorkflowList listWorkflows(std::string name = "default");
 
         proc_comm_lib_argo::model::Workflow submitWorkflow(Application *application, std::string name = "default");
 

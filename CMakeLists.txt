@@ -20,6 +20,7 @@ set(YAML_CPP_BUILD_TESTS OFF: FORCE)
 add_subdirectory(3ty/yaml-cpp-yaml-cpp-0.6.3)
 include_directories(3ty/yaml-cpp-yaml-cpp-0.6.3/include)
 
+
 # BEEBLEBOX
 add_subdirectory(3ty/beeblebrox)
 include_directories(3ty/beeblebrox/includes)
@@ -44,14 +45,14 @@ SET(LIB_SRC
         includes/proc-comm-lib-argo/workflowutils.hpp
         src/model/workflow.cpp
         src/model/workflow.hpp
-        src/model/workflowlist.cpp
-        src/model/workflowlist.hpp
         src/eoepca_lib_argo.cpp
         )
 
 SET(MODS_LIBS
         z m dl
         )
+
+
 
 
 add_library(eoepcaargo SHARED ${INCLUDE_LIB_SRC} ${LIB_SRC})
