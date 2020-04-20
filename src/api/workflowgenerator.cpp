@@ -4,14 +4,23 @@
 
 #include <eoepca/argo/application.hpp>
 #include <yaml-cpp-yaml-cpp-0.6.3/include/yaml-cpp/emittermanip.h>
-#include <proc-comm-lib-argo/workflowgenerator.hpp>
+#include <proc-comm-lib-argo/api/workflowgenerator.hpp>
 #include <yaml-cpp-yaml-cpp-0.6.3/include/yaml-cpp/yaml.h>
 
 namespace proc_comm_lib_argo {
 
-    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, std::string image, std::string command,
-                                           std::string scriptLanguage, std::map<std::string, std::string> inputs,
-                                           std::string memory, std::string cpu) {
+    /**
+     * Adds new Template to yaml emitter
+     * @param out
+     * @param name
+     * @param image
+     * @param command
+     * @param scriptLanguage
+     * @param inputs
+     * @param memory
+     * @param cpu
+     */
+    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, std::string image, std::string command, std::string scriptLanguage, std::map<std::string, std::string> inputs, std::string memory, std::string cpu) {
 
         out << YAML::BeginMap;
         out << YAML::Key << "name";
@@ -54,6 +63,11 @@ namespace proc_comm_lib_argo {
     }
 
 
+    /**
+     * Generates Yaml string from ADES application
+     * @param app
+     * @return
+     */
     std::string WorkflowGenerator::generateYamlFromApp(Application &app) {
         YAML::Emitter out;
 
@@ -126,8 +140,7 @@ namespace proc_comm_lib_argo {
             int paramCounter = 0;
             for (std::map<std::string, std::string>::iterator it = app_args.begin(); it != app_args.end(); ++it) {
                 main_template["steps"][stepCounter][0]["arguments"]["parameters"][paramCounter]["name"] = it->first;
-                main_template["steps"][stepCounter][0]["arguments"]["parameters"][paramCounter]["value"] =
-                        "{{workflow.parameters." + it->first + "}}";
+                main_template["steps"][stepCounter][0]["arguments"]["parameters"][paramCounter]["value"] = "{{workflow.parameters." + it->first + "}}";
                 paramCounter++;
             }
             stepCounter++;
@@ -143,8 +156,7 @@ namespace proc_comm_lib_argo {
             int paramCounter = 0;
             for (std::map<std::string, std::string>::iterator it = app_args.begin(); it != app_args.end(); ++it) {
                 main_template["steps"][stepCounter][0]["arguments"]["parameters"][paramCounter]["name"] = it->first;
-                main_template["steps"][stepCounter][0]["arguments"]["parameters"][paramCounter]["value"] =
-                        "{{workflow.parameters." + it->first + "}}";
+                main_template["steps"][stepCounter][0]["arguments"]["parameters"][paramCounter]["value"] = "{{workflow.parameters." + it->first + "}}";
                 paramCounter++;
             }
         }
@@ -153,28 +165,22 @@ namespace proc_comm_lib_argo {
         main_template["steps"][stepCounter][0]["name"] = "stage-out";
         main_template["steps"][stepCounter][0]["template"] = "stage-out-template";
         main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["name"] = "message";
-        main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] =
-                "{{steps." + app_name + ".outputs.result}}";
+        main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps." + app_name + ".outputs.result}}";
 
 
         out << main_template;
 
         if (hasStageIn) {
             // begin stagein template
-            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getStageInApplication()->getDockerImage(),
-                                              app.getStageInApplication()->getApplication(), "python", {}, "32Mi",
-                                              "100m");
+            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getStageInApplication()->getDockerImage(), app.getStageInApplication()->getApplication(), "python", {}, "32Mi", "100m");
         }
 
         // begin eoepca-app
-        WorkflowGenerator::addNewTemplate(out, app_template_name, docker_image, app_command, "python", {}, "32Mi",
-                                          "100m");
+        WorkflowGenerator::addNewTemplate(out, app_template_name, docker_image, app_command, "python", {}, "32Mi", "100m");
 
 
         // begin stageout template
-        WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7",
-                                          "print(\"Results: {{inputs.parameters.message}}\")", "python", {}, "32Mi",
-                                          "100m");
+        WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"Results: {{inputs.parameters.message}}\")", "python", {}, "32Mi", "100m");
 
         out << YAML::EndSeq; // end sequence templates
         out << YAML::EndMap; // endmap spec
@@ -185,7 +191,9 @@ namespace proc_comm_lib_argo {
 
 
     /**
-     * creates workflow yaml from application class
+     * creates workflow yaml from ADES Application
+     * @param app
+     * @return
      */
     std::string WorkflowGenerator::create_workflow_yaml(Application *app) {
         return generateYamlFromApp(*app);

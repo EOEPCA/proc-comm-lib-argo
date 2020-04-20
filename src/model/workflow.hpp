@@ -454,9 +454,6 @@ namespace proc_comm_lib_argo::model {
         void set_status(std::shared_ptr<Status> value) { this->status = value; }
     };
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
     enum class Phase : int {
         ERROR, FAILED, SKIPPED, SUCCEEDED
     };
@@ -553,9 +550,6 @@ namespace proc_comm_lib_argo::model {
         std::shared_ptr<Metadata> get_metadata() const { return metadata; }
         void set_metadata(std::shared_ptr<Metadata> value) { this->metadata = value; }
     };
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
 }
 
@@ -816,11 +810,6 @@ namespace nlohmann {
         j["status"] = x.get_status();
     }
 
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-
     inline void from_json(const json & j, proc_comm_lib_argo::model::Phase & x) {
         if (j == "Error") x = proc_comm_lib_argo::model::Phase::ERROR;
         else if (j == "Failed") x = proc_comm_lib_argo::model::Phase::FAILED;
@@ -880,7 +869,6 @@ namespace nlohmann {
 
 
     inline void from_json(const json &j, proc_comm_lib_argo::model::WorkflowList &x) {
-        std::cout<<"Api version::::: "<<proc_comm_lib_argo::model::get_optional<std::string>(j, "apiVersion");
         x.set_api_version(proc_comm_lib_argo::model::get_optional<std::string>(j, "apiVersion"));
         x.set_items(proc_comm_lib_argo::model::get_optional<std::vector<proc_comm_lib_argo::model::Item>>(j, "items"));
         x.set_kind(proc_comm_lib_argo::model::get_optional<std::string>(j, "kind"));
@@ -894,8 +882,6 @@ namespace nlohmann {
         j["kind"] = x.get_kind();
         j["metadata"] = x.get_metadata();
     }
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
 }
 

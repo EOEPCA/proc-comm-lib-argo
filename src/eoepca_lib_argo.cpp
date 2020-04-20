@@ -5,7 +5,7 @@
 #include <eoepca/argo/application.hpp>
 #include <string>
 #include <list>
-#include <proc-comm-lib-argo/workflowgenerator.hpp>
+#include <proc-comm-lib-argo/api/workflowgenerator.hpp>
 
 extern "C" long version() { return 1; }
 

@@ -5,7 +5,7 @@
 #include <string>
 #include <y2j-master/y2j.h>
 #include <y2j-master/rapidjson/prettywriter.h>
-#include <proc-comm-lib-argo/workflowutils.hpp>
+#include <proc-comm-lib-argo/api/workflowutils.hpp>
 
 
 namespace proc_comm_lib_argo {
