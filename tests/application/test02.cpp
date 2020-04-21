@@ -9,6 +9,7 @@
 #include <httpmockserver/mock_holder.h>
 #include <beeblebrox/includes/zaphodhands/zaphodhand.hpp>
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
+#include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
 
 
 /// Port number server is tried to listen on
@@ -28,42 +29,90 @@ static std::string getServerUrl() {
 }
 
 
+/**
+ * Http Get
+ * @param id
+ * @param ret
+ * @return
+ */
 long getHttp(std::string_view id, std::string &ret) {
-
     ZaphodHands::ZaphodHand hand{};
     std::string path{id};
-
     Beeblebrox::Uri uri(path.data());
     uri.followUri(true);
-    uri << Beeblebrox::Uri::Method::GET; // DEFAULT
-    //  uri << Beeblebrox::Uri::Method::POST;
-    //  uri << Beeblebrox::Uri::Method::PUT;
-    //  uri << Beeblebrox::Uri::Method::DELETE
-
+    uri << Beeblebrox::Uri::Method::GET;
     Beeblebrox::HttpResponseString response{};
     hand << &uri << &response;
     hand.Run();
-
-    //  response.getHeaders()
-    //  response.getContent()
-
-
     ret.assign(response.getContent());
     return uri.getHttpReturnCode();
 }
 
 
-TEST(MyTest, dummyTest) {
-    // Here should be implementation of test case using HTTP server.
-    // HTTP requests are processed by HTTPMock::responseHandler(...)
-    // I. e.: when HTTP POST request is sent on localhost:9200/example, then
-    // response with status code 500 and body "Fake HTTP response" is returned.
+/**
+* Http Delete
+* @param url
+* @param response_content
+* @return
+*/
+long deleteHttp(std::string_view url, std::string &response_content) {
+    ZaphodHands::ZaphodHand hand{};
+    std::string path{url};
+    Beeblebrox::Uri uri(path.data());
+    uri.followUri(true);
+    uri << Beeblebrox::Uri::Method::DELETE;
+    Beeblebrox::HttpResponseString response{};
+    hand << &uri << &response;
+    hand.Run();
+    response_content.assign(response.getContent());
+    return uri.getHttpReturnCode();
+}
 
 
-    std::string response;
-    auto code = getHttp("localhost:9200/blas", response);
-    std::cout<<"Code: "<< code <<std::endl<< "Content: "  <<response<<std::endl;
+/**
+ * Htpp Post
+ * @param path
+ * @param configDeployr
+ * @param resp
+ * @return
+ */
+long postHttp(std::string_view path, std::string_view configDeployr, std::string &resp) {
+    ZaphodHands::ZaphodHand hand{};
+    std::string fPath{path};
+    Beeblebrox::Uri uri(fPath.data());
+    uri.followUri(true);
+    uri << Beeblebrox::Uri::Method::POST;
+    Beeblebrox::HttpContentString contentString{configDeployr.data()};
+    Beeblebrox::HttpResponseString response{};
+    hand << &uri << &response << &contentString;
+    hand.Run();
+    auto retCode = uri.getHttpReturnCode();
+    resp.assign(response.getContent());
+    return retCode;
 }
 
 
 
+TEST(TEST2_Argo_rest_api, ListAll) {
+    std::string response;
+    auto code = getHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/", response);
+    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+}
+
+TEST(TEST2_Argo_rest_api, Submit) {
+    std::string response;
+    auto code = postHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/","{\"hello\":\"ok\"}", response);
+    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+}
+
+TEST(TEST2_Argo_rest_api, Get) {
+    std::string response;
+    auto code = getHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk", response);
+    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+}
+
+TEST(TEST2_Argo_rest_api, Delete) {
+    std::string response;
+    auto code = deleteHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk", response);
+    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+}

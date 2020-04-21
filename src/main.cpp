@@ -57,7 +57,7 @@ int main() {
         std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
         std::cout << "Content: " << e.getContent()->c_str() << std::endl;
     }
-/*
+
     // List all workflows
     auto list = workflowApi->listWorkflows();
     std::cout << "Api version: " << list.get_api_version()->c_str();
@@ -66,8 +66,10 @@ int main() {
     std::string wfName = list.get_items()->front().get_metadata()->get_name()->c_str();
     std::cout << "Name of first workflow: " << wfName << std::endl;
 
+
+
     try {
-        auto workflow = workflowApi->getWorkflowFromName("eoepca-app-2mwkg");
+        auto workflow = workflowApi->getWorkflowFromName(workflowName);
         std::cout << "Name of workflow: " << workflow.get_metadata()->get_name()->c_str() << std::endl;
         std::cout << "Name of entrypoint: " << workflow.get_spec()->get_entrypoint()->c_str() << std::endl;
         std::cout << "status phase: " << workflow.get_status()->get_phase()->c_str() << std::endl;
@@ -77,7 +79,7 @@ int main() {
         std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
         std::cout << "Content: " << e.getContent()->c_str() << std::endl;
     }
-*/
+
 
 
     try {
