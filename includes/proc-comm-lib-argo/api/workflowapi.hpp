@@ -12,6 +12,7 @@
 #include <list>
 #include "../../../src/model/workflow.hpp"
 #include "apiconfiguration.hpp"
+#include "../../../src/model/apiresponse.hpp"
 
 
 namespace proc_comm_lib_argo {
@@ -32,7 +33,7 @@ namespace proc_comm_lib_argo {
         model::WorkflowList listWorkflows(std::string _namespace = default_namespace_constant);
         model::Workflow submitWorkflow(Application *application, std::string _namespace = default_namespace_constant);
         model::Workflow getWorkflowFromName(std::string_view workflow_name, std::string _namespace = default_namespace_constant);
-        model::Workflow deleteWorkflowFromName(std::string_view workflow_name, std::string _namespace = default_namespace_constant);
+        proc_comm_lib_argo::model::ApiResponse deleteWorkflowFromName(std::string_view workflow_name, std::string _namespace = default_namespace_constant);
 
     protected:
         std::shared_ptr<ApiConfiguration> api_configuration;

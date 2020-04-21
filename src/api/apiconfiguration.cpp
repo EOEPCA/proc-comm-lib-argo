@@ -10,8 +10,8 @@ namespace proc_comm_lib_argo {
      * Constructor
      * @param apiPath
      */
-    ApiConfiguration::ApiConfiguration(std::string apiPath) : apiPath(apiPath) {
-        apiPath = apiPath;
+    ApiConfiguration::ApiConfiguration(std::string k8ApiPath, std::string argoApiPath) : k8ApiPath(k8ApiPath), argoApiPath(argoApiPath) {
+
     }
 
     /**
@@ -20,19 +20,71 @@ namespace proc_comm_lib_argo {
     ApiConfiguration::~ApiConfiguration() {}
 
     /**
-     * Returns base url
+     * Returns Argo Api base url
      * @return
      */
-    const std::string &ApiConfiguration::getBaseUrl() const {
-        return baseUrl;
+    const std::string &ApiConfiguration::getArgoApiBaseUrl() const {
+        return argoApiBaseUrl;
     }
 
     /**
-     * Sets base url
+     * Sets Argo Api base url
      * @param value
      */
-    void ApiConfiguration::setBaseUrl(const std::string &value) {
-        baseUrl = value;
+    void ApiConfiguration::setArgoApiBaseUrl(const std::string &value) {
+        argoApiBaseUrl = value;
+    }
+
+
+    /**
+ * Returns K8 Api base url
+ * @return
+ */
+    const std::string &ApiConfiguration::getK8ApiBaseUrl() const {
+        return k8ApiBaseUrl;
+    }
+
+    /**
+     * Sets K8 Api base url
+     * @param value
+     */
+    void ApiConfiguration::setK8ApiBaseUrl(const std::string &value) {
+        k8ApiBaseUrl = value;
+    }
+
+
+
+
+    /**
+     * Returns Argo api path
+     * @return
+     */
+    const std::string &ApiConfiguration::getArgoApiPath() const {
+        return argoApiPath;
+    }
+
+    /**
+     * Sets  Argo api path
+     * @param apiVersionPath
+     */
+    void ApiConfiguration::setArgoApiPath(const std::string &apiVersionPath) {
+        argoApiPath = apiVersionPath;
+    }
+
+    /**
+     * Returns Kubernetes Api Path
+     * @return
+     */
+    void ApiConfiguration::setK8ApiPath(const std::string &path) {
+        k8ApiPath=path;
+    }
+
+    /**
+     * Sets Kubernetes Api Path
+     * @return
+     */
+    const std::string &ApiConfiguration::getK8ApiPath() const {
+        return k8ApiPath;
     }
 
     /**
@@ -49,22 +101,6 @@ namespace proc_comm_lib_argo {
      */
     void ApiConfiguration::setDefaultHeaders(std::map<std::string, std::string> value) {
         defaultHeaders = value;
-    }
-
-    /**
-     * Returns api path
-     * @return
-     */
-    const std::string &ApiConfiguration::getApiPath() const {
-        return apiPath;
-    }
-
-    /**
-     * Sets api path
-     * @param apiVersionPath
-     */
-    void ApiConfiguration::setApiPath(const std::string &apiVersionPath) {
-        ApiConfiguration::apiPath = apiVersionPath;
     }
 
 }

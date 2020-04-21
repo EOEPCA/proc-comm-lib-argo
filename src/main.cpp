@@ -3,6 +3,7 @@
 #include <yaml-cpp/node/node.h>
 #include <proc-comm-lib-argo/api/apiconfiguration.hpp>
 #include <proc-comm-lib-argo/api/workflowapi.hpp>
+#include <proc-comm-lib-argo/api/apiexception.hpp>
 
 
 /**
@@ -33,7 +34,8 @@ int main() {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setBaseUrl("http://localhost:8080");
+    apiConf->setArgoApiBaseUrl("http://localhost:8080");
+
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
@@ -44,15 +46,50 @@ int main() {
     application->setDockerImage("centos:7");
     application->addParam("message", "Hello World");
     application->setApplication("print(\"{{workflow.parameters.message}}\")");
-    //proc_comm_lib_argo::model::Workflow workflow = api.submitWorkflow(application.get());
-    //std::cout<< "Worklflow name: " << workflow.get_metadata()->get_creation_timestamp()->c_str();
-
+    std::string workflowName;
+    try {
+        proc_comm_lib_argo::model::Workflow workflow = workflowApi->submitWorkflow(application.get());
+        workflowName = workflow.get_metadata()->get_name()->c_str();
+        std::cout << "Created worklflow name: " << workflow.get_metadata()->get_name()->c_str() << std::endl;
+    } catch (proc_comm_lib_argo::ApiException e) {
+        std::cout << "Oopss something went wrong " << std::endl;
+        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
+        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
+        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+    }
+/*
     // List all workflows
     auto list = workflowApi->listWorkflows();
     std::cout << "Api version: " << list.get_api_version()->c_str();
     std::cout << "Namespace: " << list.get_items()->front().get_metadata()->get_metadata_namespace()->c_str() << std::endl;
     std::cout << "Number of workflows: " << list.get_items()->size() << std::endl;
-    std::cout << "Name of first workflow: " << list.get_items()->front().get_metadata()->get_name()->c_str() << std::endl;
+    std::string wfName = list.get_items()->front().get_metadata()->get_name()->c_str();
+    std::cout << "Name of first workflow: " << wfName << std::endl;
+
+    try {
+        auto workflow = workflowApi->getWorkflowFromName("eoepca-app-2mwkg");
+        std::cout << "Name of workflow: " << workflow.get_metadata()->get_name()->c_str() << std::endl;
+        std::cout << "Name of entrypoint: " << workflow.get_spec()->get_entrypoint()->c_str() << std::endl;
+        std::cout << "status phase: " << workflow.get_status()->get_phase()->c_str() << std::endl;
+    } catch (proc_comm_lib_argo::ApiException e) {
+        std::cout << "Oopss something went wrong " << std::endl;
+        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
+        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
+        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+    }
+*/
+
+
+    try {
+        auto status = workflowApi->deleteWorkflowFromName(workflowName);
+        std::cout << "Delete status: " << status.get_status()->c_str();
+    } catch (proc_comm_lib_argo::ApiException e) {
+        std::cout << "Oopss something went wrong " << std::endl;
+        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
+        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
+        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+    }
+
 
     return 0;
 }
