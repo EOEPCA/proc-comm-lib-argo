@@ -10,10 +10,9 @@
 #include <eoepca/argo/application.hpp>
 #include <string>
 #include <list>
-#include "../../../src/model/workflow.hpp"
-#include "apiconfiguration.hpp"
-#include "../../../src/model/apiresponse.hpp"
-
+#include <eoepca/argo/model/workflow.hpp>
+#include <eoepca/argo/model/apiresponse.hpp>
+#include <proc-comm-lib-argo/api/apiconfiguration.hpp>
 
 namespace proc_comm_lib_argo {
 
@@ -22,7 +21,7 @@ namespace proc_comm_lib_argo {
     class WorkflowApi {
 
     public:
-        WorkflowApi(std::shared_ptr<ApiConfiguration> configuration, std::string d_namespace=default_namespace_constant);
+        WorkflowApi(std::shared_ptr<ApiConfiguration> configuration, std::string_view d_namespace=default_namespace_constant);
         virtual ~WorkflowApi();
 
         // api configuration getter and setter
@@ -30,10 +29,10 @@ namespace proc_comm_lib_argo {
         void setConfiguration(std::shared_ptr<ApiConfiguration> configuration);
 
         // workflow api methods
-        model::WorkflowList listWorkflows(std::string _namespace = default_namespace_constant);
-        model::Workflow submitWorkflow(Application *application, std::string _namespace = default_namespace_constant);
-        model::Workflow getWorkflowFromName(std::string_view workflow_name, std::string _namespace = default_namespace_constant);
-        proc_comm_lib_argo::model::ApiResponse deleteWorkflowFromName(std::string_view workflow_name, std::string _namespace = default_namespace_constant);
+        model::WorkflowList listWorkflows(std::string_view _namespace = default_namespace_constant);
+        model::Workflow submitWorkflow(Application *application, std::string_view _namespace = default_namespace_constant);
+        model::Workflow getWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
+        model::ApiResponse deleteWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
 
     protected:
         std::shared_ptr<ApiConfiguration> api_configuration;

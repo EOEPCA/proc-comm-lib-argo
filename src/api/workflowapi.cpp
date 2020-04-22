@@ -23,7 +23,7 @@ namespace proc_comm_lib_argo {
      * @param configuration
      * @param d_namespace
      */
-    WorkflowApi::WorkflowApi(std::shared_ptr<ApiConfiguration> configuration, std::string d_namespace) : api_configuration(configuration), default_namespace(d_namespace) {
+    WorkflowApi::WorkflowApi(std::shared_ptr<ApiConfiguration> configuration, std::string_view d_namespace) : api_configuration(configuration), default_namespace(d_namespace) {
 
     }
 
@@ -117,7 +117,7 @@ namespace proc_comm_lib_argo {
      * @param name
      * @return
      */
-    model::Workflow WorkflowApi::submitWorkflow(Application *application, std::string argo_namespace) {
+    model::Workflow WorkflowApi::submitWorkflow(Application *application, std::string_view argo_namespace) {
 
         // creating yaml workflow from command
         std::string yaml = proc_comm_lib_argo::WorkflowGenerator::create_workflow_yaml(application);
@@ -137,7 +137,7 @@ namespace proc_comm_lib_argo {
         // Workflow kind must uppercase
         worlflowJson = std::regex_replace(worlflowJson, std::regex("\"kind\": \"workflow\""), "\"kind\": \"Workflow\"");
         std::string response;
-        postHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace + "/workflows", worlflowJson, response);
+        postHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows", worlflowJson, response);
 
         // checking response. If there is an error, an exception is thrown
         rapidjson::Document responseDoc;
@@ -159,10 +159,10 @@ namespace proc_comm_lib_argo {
      * @param argo_namespace
      * @return
      */
-    model::Workflow WorkflowApi::getWorkflowFromName(std::string_view workflow_name, std::string argo_namespace) {
+    model::Workflow WorkflowApi::getWorkflowFromName(std::string_view workflow_name, std::string_view argo_namespace) {
 
         std::string response;
-        getHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace + "/workflows/" + workflow_name.data(), response);
+        getHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data(), response);
         proc_comm_lib_argo::model::Workflow workflow = nlohmann::json::parse(response);
         if (workflow.get_kind()->compare("Workflow") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
@@ -177,10 +177,10 @@ namespace proc_comm_lib_argo {
      * @param argo_namespace
      * @return
      */
-    model::ApiResponse WorkflowApi::deleteWorkflowFromName(std::string_view workflow_name, std::string argo_namespace) {
+    model::ApiResponse WorkflowApi::deleteWorkflowFromName(std::string_view workflow_name, std::string_view argo_namespace) {
 
         std::string response;
-        deleteHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace + "/workflows/" + workflow_name.data(), response);
+        deleteHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data(), response);
         proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
         if (apiResponse.get_status()->compare("Failure") == 0) {
             throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
@@ -194,10 +194,10 @@ namespace proc_comm_lib_argo {
      * @param argo_namespace
      * @return
      */
-    model::WorkflowList WorkflowApi::listWorkflows(std::string argo_namespace) {
+    model::WorkflowList WorkflowApi::listWorkflows(std::string_view argo_namespace) {
 
         std::string response;
-        getHttp(api_configuration->getArgoApiBaseUrl() + "/" + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace + "/workflows/", response);
+        getHttp(api_configuration->getArgoApiBaseUrl() + "/" + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/", response);
         proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
         if (workflowList.get_kind()->compare("WorkflowList") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);

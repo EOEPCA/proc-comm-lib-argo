@@ -50,10 +50,10 @@ SET(LIB_SRC
         includes/proc-comm-lib-argo/api/apiconfiguration.hpp
         src/api/apiexception.cpp
         includes/proc-comm-lib-argo/api/apiexception.hpp
-        src/model/apiresponse.hpp
-        src/model/workflow.hpp
+        includes/eoepca/argo/model/apiresponse.hpp
+        includes/eoepca/argo/model/workflow.hpp
         src/eoepca_lib_argo.cpp
-        src/model/nlohmann.hpp
+        includes/eoepca/argo/model/nlohmann.hpp
         )
 
 SET(MODS_LIBS

@@ -166,10 +166,10 @@ void test_api() {
 int main() {
 
     // workflow generation
-    //test_workflow_generation();
+    test_workflow_generation();
 
     // testing api
-    test_api();
+    //test_api();
 
 
     return 0;
