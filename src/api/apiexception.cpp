@@ -2,7 +2,7 @@
 // Created by bla on 20/04/20.
 //
 
-#include "proc-comm-lib-argo/api/apiexception.hpp"
+#include <proc-comm-lib-argo/api/apiexception.hpp>
 
 namespace proc_comm_lib_argo {
 
@@ -12,7 +12,7 @@ namespace proc_comm_lib_argo {
      * @param message
      * @param content
      */
-    ApiException::ApiException(std::shared_ptr<int> errorCode, std::shared_ptr<std::string> message, std::shared_ptr<std::string> content):
+    ApiException::ApiException(int errorCode, std::string_view message, std::string_view content):
             errorCode(errorCode), message(message), content(content) {
     }
 
@@ -26,7 +26,7 @@ namespace proc_comm_lib_argo {
      * Returns error content
      * @return
      */
-    std::shared_ptr<std::string> ApiException::getContent() const {
+    std::string_view ApiException::getContent() const {
         return content;
     }
 
@@ -34,11 +34,11 @@ namespace proc_comm_lib_argo {
      * Returns Error Message
      * @return
      */
-    std::shared_ptr<std::string> ApiException::getMessage() const {
+    std::string_view ApiException::getMessage() const {
         return message;
     }
 
-    std::shared_ptr<int> ApiException::getErrorCode() const {
+    int ApiException::getErrorCode() const {
         return errorCode;
     }
 

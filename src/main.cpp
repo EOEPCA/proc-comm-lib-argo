@@ -116,9 +116,9 @@ void test_api() {
         std::cout << "Created worklflow name: " << workflow.get_metadata()->get_name()->c_str() << std::endl;
     } catch (proc_comm_lib_argo::ApiException e) {
         std::cout << "Oopss something went wrong " << std::endl;
-        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
-        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
-        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+        std::cout << "Error message: " << e.getMessage() << std::endl;
+        std::cout << "Error code: " << e.getErrorCode() << std::endl;
+        std::cout << "Content: " << e.getContent() << std::endl;
     }
 
     // List all workflows
@@ -131,9 +131,9 @@ void test_api() {
         std::cout << "Name of first workflow: " << wfName << std::endl;
     } catch (proc_comm_lib_argo::ApiException e) {
         std::cout << "Oopss something went wrong " << std::endl;
-        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
-        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
-        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+        std::cout << "Error message: " << e.getMessage() << std::endl;
+        std::cout << "Error code: " << e.getErrorCode() << std::endl;
+        std::cout << "Content: " << e.getContent() << std::endl;
     }
 
 
@@ -144,9 +144,9 @@ void test_api() {
         std::cout << "status phase: " << workflow.get_status()->get_phase()->c_str() << std::endl;
     } catch (proc_comm_lib_argo::ApiException e) {
         std::cout << "Oopss something went wrong " << std::endl;
-        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
-        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
-        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+        std::cout << "Error message: " << e.getMessage() << std::endl;
+        std::cout << "Error code: " << e.getErrorCode() << std::endl;
+        std::cout << "Content: " << e.getContent() << std::endl;
     }
 
 
@@ -155,17 +155,15 @@ void test_api() {
         std::cout << "Delete status: " << status.get_status()->c_str();
     } catch (proc_comm_lib_argo::ApiException e) {
         std::cout << "Oopss something went wrong " << std::endl;
-        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
-        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
-        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+        std::cout << "Error message: " << e.getMessage() << std::endl;
+        std::cout << "Error code: " << e.getErrorCode() << std::endl;
+        std::cout << "Content: " << e.getContent() << std::endl;
     }
 
 
 }
 
 int main() {
-
-
 
     // workflow generation
     //test_workflow_generation();

@@ -1,1 +1,256 @@
-{"apiVersion":"argoproj.io/v1alpha1","kind":"Workflow","metadata":{"creationTimestamp":"2020-04-21T12:53:45Z","generateName":"eoepca-app-","generation":3,"labels":{"workflows.argoproj.io/phase":"Running"},"managedFields":[{"apiVersion":"argoproj.io/v1alpha1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:generateName":{}},"f:spec":{".":{},"f:arguments":{".":{},"f:parameters":{}},"f:entrypoint":{}}},"manager":"kubectl","operation":"Update","time":"2020-04-21T12:53:45Z"},{"apiVersion":"argoproj.io/v1alpha1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:labels":{".":{},"f:workflows.argoproj.io/phase":{}}},"f:spec":{"f:templates":{}},"f:status":{".":{},"f:finishedAt":{},"f:nodes":{".":{},"f:eoepca-app-qqcnk":{".":{},"f:children":{},"f:displayName":{},"f:finishedAt":{},"f:id":{},"f:name":{},"f:phase":{},"f:startedAt":{},"f:templateName":{},"f:type":{}},"f:eoepca-app-qqcnk-1998043259":{".":{},"f:boundaryID":{},"f:children":{},"f:displayName":{},"f:finishedAt":{},"f:id":{},"f:name":{},"f:phase":{},"f:startedAt":{},"f:templateName":{},"f:type":{}},"f:eoepca-app-qqcnk-3059454428":{".":{},"f:boundaryID":{},"f:displayName":{},"f:finishedAt":{},"f:id":{},"f:inputs":{".":{},"f:parameters":{}},"f:message":{},"f:name":{},"f:phase":{},"f:startedAt":{},"f:templateName":{},"f:type":{}}},"f:phase":{},"f:startedAt":{}}},"manager":"workflow-controller","operation":"Update","time":"2020-04-21T12:53:47Z"}],"name":"eoepca-app-qqcnk","namespace":"default","resourceVersion":"1106551","selfLink":"/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk","uid":"dae2270d-68e1-4ec8-89c6-04a7939962ee"},"spec":{"arguments":{"parameters":[{"name":"message","value":"Hello World"}]},"entrypoint":"main","templates":[{"arguments":{},"inputs":{},"metadata":{},"name":"main","outputs":{},"steps":[[{"arguments":{"parameters":[{"name":"message","value":"{{workflow.parameters.message}}"}]},"name":"eoepca-app","template":"eoepca-app-template"}],[{"arguments":{"parameters":[{"name":"message","value":"{{steps.eoepca-app.outputs.result}}"}]},"name":"stage-out","template":"stage-out-template"}]]},{"arguments":{},"inputs":{"parameters":[{"name":"message"}]},"metadata":{},"name":"eoepca-app-template","outputs":{},"script":{"command":["python"],"image":"centos:7","name":"","resources":{},"source":"print(\"{{workflow.parameters.message}}\")\n"}},{"arguments":{},"inputs":{"parameters":[{"name":"message"}]},"metadata":{},"name":"stage-out-template","outputs":{},"script":{"command":["python"],"image":"centos:7","name":"","resources":{},"source":"print(\"Results: {{inputs.parameters.message}}\")\n"}}]},"status":{"finishedAt":null,"nodes":{"eoepca-app-qqcnk":{"children":["eoepca-app-qqcnk-1998043259"],"displayName":"eoepca-app-qqcnk","finishedAt":null,"id":"eoepca-app-qqcnk","name":"eoepca-app-qqcnk","phase":"Running","startedAt":"2020-04-21T12:53:45Z","templateName":"main","type":"Steps"},"eoepca-app-qqcnk-1998043259":{"boundaryID":"eoepca-app-qqcnk","children":["eoepca-app-qqcnk-3059454428"],"displayName":"[0]","finishedAt":null,"id":"eoepca-app-qqcnk-1998043259","name":"eoepca-app-qqcnk[0]","phase":"Running","startedAt":"2020-04-21T12:53:45Z","templateName":"main","type":"StepGroup"},"eoepca-app-qqcnk-3059454428":{"boundaryID":"eoepca-app-qqcnk","displayName":"eoepca-app","finishedAt":null,"id":"eoepca-app-qqcnk-3059454428","inputs":{"parameters":[{"name":"message","value":"Hello World"}]},"message":"PodInitializing","name":"eoepca-app-qqcnk[0].eoepca-app","phase":"Pending","startedAt":"2020-04-21T12:53:45Z","templateName":"eoepca-app-template","type":"Pod"}},"phase":"Running","startedAt":"2020-04-21T12:53:45Z"}}
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Workflow",
+  "metadata": {
+    "creationTimestamp": "2020-04-21T12:53:45Z",
+    "generateName": "eoepca-app-",
+    "generation": 3,
+    "labels": {
+      "workflows.argoproj.io/phase": "Running"
+    },
+    "managedFields": [
+      {
+        "apiVersion": "argoproj.io/v1alpha1",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:generateName": {}
+          },
+          "f:spec": {
+            ".": {},
+            "f:arguments": {
+              ".": {},
+              "f:parameters": {}
+            },
+            "f:entrypoint": {}
+          }
+        },
+        "manager": "kubectl",
+        "operation": "Update",
+        "time": "2020-04-21T12:53:45Z"
+      },
+      {
+        "apiVersion": "argoproj.io/v1alpha1",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:labels": {
+              ".": {},
+              "f:workflows.argoproj.io/phase": {}
+            }
+          },
+          "f:spec": {
+            "f:templates": {}
+          },
+          "f:status": {
+            ".": {},
+            "f:finishedAt": {},
+            "f:nodes": {
+              ".": {},
+              "f:eoepca-app-qqcnk": {
+                ".": {},
+                "f:children": {},
+                "f:displayName": {},
+                "f:finishedAt": {},
+                "f:id": {},
+                "f:name": {},
+                "f:phase": {},
+                "f:startedAt": {},
+                "f:templateName": {},
+                "f:type": {}
+              },
+              "f:eoepca-app-qqcnk-1998043259": {
+                ".": {},
+                "f:boundaryID": {},
+                "f:children": {},
+                "f:displayName": {},
+                "f:finishedAt": {},
+                "f:id": {},
+                "f:name": {},
+                "f:phase": {},
+                "f:startedAt": {},
+                "f:templateName": {},
+                "f:type": {}
+              },
+              "f:eoepca-app-qqcnk-3059454428": {
+                ".": {},
+                "f:boundaryID": {},
+                "f:displayName": {},
+                "f:finishedAt": {},
+                "f:id": {},
+                "f:inputs": {
+                  ".": {},
+                  "f:parameters": {}
+                },
+                "f:message": {},
+                "f:name": {},
+                "f:phase": {},
+                "f:startedAt": {},
+                "f:templateName": {},
+                "f:type": {}
+              }
+            },
+            "f:phase": {},
+            "f:startedAt": {}
+          }
+        },
+        "manager": "workflow-controller",
+        "operation": "Update",
+        "time": "2020-04-21T12:53:47Z"
+      }
+    ],
+    "name": "eoepca-app-qqcnk",
+    "namespace": "default",
+    "resourceVersion": "1106551",
+    "selfLink": "/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk",
+    "uid": "dae2270d-68e1-4ec8-89c6-04a7939962ee"
+  },
+  "spec": {
+    "arguments": {
+      "parameters": [
+        {
+          "name": "message",
+          "value": "Hello World"
+        }
+      ]
+    },
+    "entrypoint": "main",
+    "templates": [
+      {
+        "arguments": {},
+        "inputs": {},
+        "metadata": {},
+        "name": "main",
+        "outputs": {},
+        "steps": [
+          [
+            {
+              "arguments": {
+                "parameters": [
+                  {
+                    "name": "message",
+                    "value": "{{workflow.parameters.message}}"
+                  }
+                ]
+              },
+              "name": "eoepca-app",
+              "template": "eoepca-app-template"
+            }
+          ],
+          [
+            {
+              "arguments": {
+                "parameters": [
+                  {
+                    "name": "message",
+                    "value": "{{steps.eoepca-app.outputs.result}}"
+                  }
+                ]
+              },
+              "name": "stage-out",
+              "template": "stage-out-template"
+            }
+          ]
+        ]
+      },
+      {
+        "arguments": {},
+        "inputs": {
+          "parameters": [
+            {
+              "name": "message"
+            }
+          ]
+        },
+        "metadata": {},
+        "name": "eoepca-app-template",
+        "outputs": {},
+        "script": {
+          "command": [
+            "python"
+          ],
+          "image": "centos:7",
+          "name": "",
+          "resources": {},
+          "source": "print(\"{{workflow.parameters.message}}\")\n"
+        }
+      },
+      {
+        "arguments": {},
+        "inputs": {
+          "parameters": [
+            {
+              "name": "message"
+            }
+          ]
+        },
+        "metadata": {},
+        "name": "stage-out-template",
+        "outputs": {},
+        "script": {
+          "command": [
+            "python"
+          ],
+          "image": "centos:7",
+          "name": "",
+          "resources": {},
+          "source": "print(\"Results: {{inputs.parameters.message}}\")\n"
+        }
+      }
+    ]
+  },
+  "status": {
+    "finishedAt": null,
+    "nodes": {
+      "eoepca-app-qqcnk": {
+        "children": [
+          "eoepca-app-qqcnk-1998043259"
+        ],
+        "displayName": "eoepca-app-qqcnk",
+        "finishedAt": null,
+        "id": "eoepca-app-qqcnk",
+        "name": "eoepca-app-qqcnk",
+        "phase": "Running",
+        "startedAt": "2020-04-21T12:53:45Z",
+        "templateName": "main",
+        "type": "Steps"
+      },
+      "eoepca-app-qqcnk-1998043259": {
+        "boundaryID": "eoepca-app-qqcnk",
+        "children": [
+          "eoepca-app-qqcnk-3059454428"
+        ],
+        "displayName": "[0]",
+        "finishedAt": null,
+        "id": "eoepca-app-qqcnk-1998043259",
+        "name": "eoepca-app-qqcnk[0]",
+        "phase": "Running",
+        "startedAt": "2020-04-21T12:53:45Z",
+        "templateName": "main",
+        "type": "StepGroup"
+      },
+      "eoepca-app-qqcnk-3059454428": {
+        "boundaryID": "eoepca-app-qqcnk",
+        "displayName": "eoepca-app",
+        "finishedAt": null,
+        "id": "eoepca-app-qqcnk-3059454428",
+        "inputs": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello World"
+            }
+          ]
+        },
+        "message": "PodInitializing",
+        "name": "eoepca-app-qqcnk[0].eoepca-app",
+        "phase": "Pending",
+        "startedAt": "2020-04-21T12:53:45Z",
+        "templateName": "eoepca-app-template",
+        "type": "Pod"
+      }
+    },
+    "phase": "Running",
+    "startedAt": "2020-04-21T12:53:45Z"
+  }
+}

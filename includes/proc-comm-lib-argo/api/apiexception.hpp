@@ -17,34 +17,33 @@ namespace proc_comm_lib_argo {
     public:
 
         // Constructors
-        ApiException(std::shared_ptr<int> errorCode, std::shared_ptr<std::string> message, std::shared_ptr<std::string> content = nullptr);
-
+        ApiException(int errorCode, std::string_view message, std::string_view content = "");
 
         // Desctructors
         virtual ~ApiException();
 
         // Get Error Message
-        std::shared_ptr<std::string> getMessage() const;
+        std::string_view getMessage() const;
 
 
         // Get Headers
         std::map<std::string, std::string> &getHeaders();
 
         // Get Response
-        std::shared_ptr<std::string> getContent() const;
+        std::string_view getContent() const;
 
         // Get Error code
-        std::shared_ptr<int> getErrorCode() const;
+        int getErrorCode() const;
 
         virtual const char *what() const throw() {
-            return message->c_str();
+            return message.data();
         }
 
 
     protected:
-        std::shared_ptr<int> errorCode;
-        std::shared_ptr<std::string> message;
-        std::shared_ptr<std::string> content;
+        int errorCode;
+        std::string_view message;
+        std::string_view content;
         std::map<std::string, std::string> headers;
     };
 

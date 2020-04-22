@@ -21,8 +21,15 @@ namespace EOEPCA {
                     return;
                 }
 
+                // Creates a workflow yaml from run
                 create_workflow_yaml = (void (*)(proc_comm_lib_argo::Run *, std::list<std::string> &)) dlsym(handle, "create_workflow_yaml");
+
+                // Creates a workflow yaml from app
                 create_workflow_yaml_from_app = (void (*)(proc_comm_lib_argo::Application *, std::string &)) dlsym(handle, "create_workflow_yaml_from_app");
+
+                // API Methods
+
+
 
                 if (!version) {
                     setValid(false);

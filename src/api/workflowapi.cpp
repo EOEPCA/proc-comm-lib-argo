@@ -12,7 +12,7 @@
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
 #include <proc-comm-lib-argo/api/apiexception.hpp>
-#include "../model/apiresponse.hpp"
+
 
 
 namespace proc_comm_lib_argo {
@@ -134,7 +134,7 @@ namespace proc_comm_lib_argo {
         std::string worlflowJson = buffer.GetString();
 
         // Submitting workflow
-        // Workflow kind must uppercas
+        // Workflow kind must uppercase
         worlflowJson = std::regex_replace(worlflowJson, std::regex("\"kind\": \"workflow\""), "\"kind\": \"Workflow\"");
         std::string response;
         postHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace + "/workflows", worlflowJson, response);
@@ -145,7 +145,7 @@ namespace proc_comm_lib_argo {
         if (strcmp(responseDoc["kind"].GetString(), "Status") == 0) {
             std::cout << "throwing exception" << std::endl;
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
-            throw ApiException(apiResponse.get_code(), apiResponse.get_message(), std::make_shared<std::string>(response));
+            throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
         }
 
         // if submit is successfull, the api returns the deleted workflow
@@ -166,7 +166,7 @@ namespace proc_comm_lib_argo {
         proc_comm_lib_argo::model::Workflow workflow = nlohmann::json::parse(response);
         if (workflow.get_kind()->compare("Workflow") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
-            throw ApiException(apiResponse.get_code(), apiResponse.get_message(), std::make_shared<std::string>(response));
+            throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
         }
         return workflow;
     }
@@ -183,7 +183,7 @@ namespace proc_comm_lib_argo {
         deleteHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace + "/workflows/" + workflow_name.data(), response);
         proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
         if (apiResponse.get_status()->compare("Failure") == 0) {
-            throw ApiException(apiResponse.get_code(), apiResponse.get_message(), std::make_shared<std::string>(response));
+            throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
         }
 
         return apiResponse;
@@ -201,7 +201,7 @@ namespace proc_comm_lib_argo {
         proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
         if (workflowList.get_kind()->compare("WorkflowList") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
-            throw ApiException(apiResponse.get_code(), apiResponse.get_message(), std::make_shared<std::string>(response));
+            throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
         }
         return workflowList;
     }
