@@ -13,9 +13,7 @@ namespace EOEPCA {
     public:
         EOEPCAargo() = delete;
 
-        explicit EOEPCAargo(const std::string &path) : mods::IModInterface(path), create_workflow_yaml(nullptr),
-                                                       create_workflow_yaml_from_app(
-                                                               nullptr) {
+        explicit EOEPCAargo(const std::string &path) : mods::IModInterface(path), create_workflow_yaml(nullptr), create_workflow_yaml_from_app(nullptr) {
             if (isValid()) {
                 version = (long (*)(void)) dlsym(handle, "version");
                 if (!version) {
@@ -23,10 +21,8 @@ namespace EOEPCA {
                     return;
                 }
 
-                create_workflow_yaml = (void (*)(proc_comm_lib_argo::Run *, std::list<std::string> &)) dlsym(handle,
-                                                                                                             "create_workflow_yaml");
-                create_workflow_yaml_from_app = (void (*)(proc_comm_lib_argo::Application *, std::string &)) dlsym(
-                        handle, "create_workflow_yaml_from_app");
+                create_workflow_yaml = (void (*)(proc_comm_lib_argo::Run *, std::list<std::string> &)) dlsym(handle, "create_workflow_yaml");
+                create_workflow_yaml_from_app = (void (*)(proc_comm_lib_argo::Application *, std::string &)) dlsym(handle, "create_workflow_yaml_from_app");
 
                 if (!version) {
                     setValid(false);

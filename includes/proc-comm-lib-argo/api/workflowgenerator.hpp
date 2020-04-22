@@ -24,6 +24,11 @@ namespace proc_comm_lib_argo {
                                    std::string memory, std::string cpu);
 
 
+
+        static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node);
+
+
+
     };
 }
 

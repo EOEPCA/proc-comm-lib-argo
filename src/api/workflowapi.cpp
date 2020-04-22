@@ -119,7 +119,7 @@ namespace proc_comm_lib_argo {
      */
     model::Workflow WorkflowApi::submitWorkflow(Application *application, std::string argo_namespace) {
 
-        // creating yaml workflow from application
+        // creating yaml workflow from command
         std::string yaml = proc_comm_lib_argo::WorkflowGenerator::create_workflow_yaml(application);
 
         // converting yaml to json

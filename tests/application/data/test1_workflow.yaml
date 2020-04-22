@@ -8,7 +8,9 @@ spec:
   arguments:
     parameters:
       - name: message
-        value: Hello World
+        value: Hello
+      - name: message1
+        value: World
   templates:
     - name: main
       steps:
@@ -19,22 +21,28 @@ spec:
               parameters:
                 - name: message
                   value: "{{workflow.parameters.message}}"
+                - name: message1
+                  value: "{{workflow.parameters.message1}}"
         -
           - name: stage-out
             template: stage-out-template
             arguments:
               parameters:
                 - name: message
-                  value: "{{steps.eoepca-app.outputs.result}}"
+                  value: "{{steps.eoepca-app.outputs.parameters.param}}"
     - name: eoepca-app-template
       inputs:
         parameters:
           - name: message
-      script:
+      container:
         image: centos:7
-        command: [python]
-        source: |
-          print("{{workflow.parameters.message}}")
+        command: [sh, -c]
+        args: ["echo {{workflow.parameters.message}} {{workflow.parameters.message1}} | tee /tmp/output.txt"]
+      outputs:
+        parameters:
+          - name: param
+            valueFrom:
+              path: /tmp/output.txt
       resources:
         limits:
           memory: 32Mi

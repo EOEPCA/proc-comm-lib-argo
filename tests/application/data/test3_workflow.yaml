@@ -8,21 +8,24 @@ spec:
   arguments:
     parameters:
       - name: message
-        value: Hello
-      - name: message1
-        value: World
+        value: https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue
   templates:
     - name: main
       steps:
+        -
+          - name: stage-in
+            template: stage-in-template
+            arguments:
+              parameters:
+                - name: message
+                  value: "{{workflow.parameters.message}}"
         -
           - name: eoepca-app
             template: eoepca-app-template
             arguments:
               parameters:
                 - name: message
-                  value: "{{workflow.parameters.message}}"
-                - name: message1
-                  value: "{{workflow.parameters.message1}}"
+                  value: "{{steps.stage-in.outputs.result}}"
         -
           - name: stage-out
             template: stage-out-template
@@ -30,6 +33,26 @@ spec:
               parameters:
                 - name: message
                   value: "{{steps.eoepca-app.outputs.result}}"
+    - name: stage-in-template
+      inputs:
+        parameters:
+          - name: message
+      script:
+        image: meetup/python
+        command: [python]
+        source: |
+          import urllib.request
+          import xml.etree.ElementTree as ET
+          url = '{{inputs.parameters.message}}'
+          response = urllib.request.urlopen(url)
+          xml = response.read()
+          tree = ET.fromstring(xml)
+          enclosure = tree[5][5].get('href')
+          print(urllib.parse.quote(enclosure))
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
     - name: eoepca-app-template
       inputs:
         parameters:
@@ -38,7 +61,7 @@ spec:
         image: centos:7
         command: [python]
         source: |
-          print("{{workflow.parameters.message}} {{workflow.parameters.message1}}" )
+          print("Downloaded {{inputs.parameters.message}}")
       resources:
         limits:
           memory: 32Mi

@@ -9,17 +9,104 @@
 
 namespace proc_comm_lib_argo {
 
-    /**
-     * Adds new Template to yaml emitter
-     * @param out
-     * @param name
-     * @param image
-     * @param command
-     * @param scriptLanguage
-     * @param inputs
-     * @param memory
-     * @param cpu
-     */
+
+    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate* node) {
+
+
+        out << YAML::BeginMap;
+        out << YAML::Key << "name";
+        out << YAML::Value << name;
+
+        out << YAML::Key << "inputs";
+        out << YAML::BeginMap;
+        out << YAML::Key << "parameters";
+        out << YAML::BeginSeq;
+        out << YAML::BeginMap;
+        out << YAML::Key << "name";
+        out << YAML::Value << "message";
+        out << YAML::EndMap;
+        out << YAML::EndSeq;
+        out << YAML::EndMap;
+
+
+        if(node->isUseShell()){
+            out << YAML::Key << "container";
+            out << YAML::BeginMap; // container begin map
+            out << YAML::Key << "image";
+            out << YAML::Value << node->getDockerImage().c_str();
+            out << YAML::Key << "command";
+            out << YAML::Value << YAML::Flow << YAML::BeginSeq << "sh" << "-c" << YAML::EndSeq;
+            out << YAML::Key << "args";
+
+
+            out << YAML::Value << YAML::Flow << YAML::BeginSeq ;
+
+            std::string command = node->getCommand().c_str();
+            for (auto const& param : node->getParams())
+            {
+                command += " {{workflow.parameters."+param.first+"}}";
+            }
+            command += " | tee /tmp/output.txt";
+            out << command;
+            out << YAML::EndSeq;
+            out << YAML::EndMap; // container end map
+
+
+            /// start outputs
+            out << YAML::Key << "outputs";
+            out << YAML::BeginMap;
+            out << YAML::Key << "parameters";
+            out << YAML::BeginSeq ;
+            out << YAML::BeginMap;
+            out << YAML::Key << "name";
+            out << YAML::Value << "param";
+            out << YAML::Key << "valueFrom";
+            out << YAML::BeginMap;
+            out << YAML::Key << "path";
+            out << YAML::Value << "/tmp/output.txt";
+            out << YAML::EndMap;
+            out << YAML::EndMap;
+            out << YAML::EndSeq;
+            out << YAML::EndMap;
+            //// end outputs
+
+
+        } else {
+            out << YAML::Key << "script";
+            out << YAML::BeginMap;
+            out << YAML::Key << "image";
+            out << YAML::Value << node->getDockerImage().c_str();
+            out << YAML::Key << "command";
+            out << YAML::Value << YAML::Flow << YAML::BeginSeq << node->script.command << YAML::EndSeq;
+            out << YAML::Key << "source";
+            out << YAML::Value << YAML::Literal << node->script.source;
+            out << YAML::EndMap;
+        }
+        out << YAML::Key << "resources";
+        out << YAML::BeginMap;
+        out << YAML::Key << "limits";
+        out << YAML::BeginMap;
+        out << YAML::Key << "memory";
+        out << YAML::Value << node->limits.memory;
+        out << YAML::Key << "cpu";
+        out << YAML::Value << node->limits.cpu;
+        out << YAML::EndMap;
+        out << YAML::EndMap;
+        out << YAML::EndMap;
+
+
+    }
+        /**
+         * Adds new Template to yaml emitter
+         * @param out
+         * @param name
+         * @param image
+         * @param command
+         * @param scriptLanguage
+         * @param inputs
+         * @param memory
+         * @param cpu
+         */
     void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, std::string image, std::string command, std::string scriptLanguage, std::map<std::string, std::string> inputs, std::string memory, std::string cpu) {
 
         out << YAML::BeginMap;
@@ -64,7 +151,7 @@ namespace proc_comm_lib_argo {
 
 
     /**
-     * Generates Yaml string from ADES application
+     * Generates Yaml string from ADES command
      * @param app
      * @return
      */
@@ -76,11 +163,11 @@ namespace proc_comm_lib_argo {
         std::string workflow_name = app_name + "-";
         std::string workflow_namespace = "default";
 
-        bool hasStageIn = app.getStageInApplication() != NULL;
+        bool hasStageIn = app.getStageInNode() != NULL;
 
 
         std::string docker_image = app.getDockerImage();
-        std::string app_command = app.getApplication();
+        std::string app_command = app.getCommand();
         std::map<std::string, std::string> app_args = app.getParams();
 
         // default values
@@ -165,19 +252,23 @@ namespace proc_comm_lib_argo {
         main_template["steps"][stepCounter][0]["name"] = "stage-out";
         main_template["steps"][stepCounter][0]["template"] = "stage-out-template";
         main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["name"] = "message";
-        main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps." + app_name + ".outputs.result}}";
-
+        if(app.isUseShell()){
+            main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps." + app_name + ".outputs.parameters.param}}";
+        }
+        else {
+            main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps." + app_name + ".outputs.result}}";
+        }
 
         out << main_template;
 
         if (hasStageIn) {
             // begin stagein template
-            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getStageInApplication()->getDockerImage(), app.getStageInApplication()->getApplication(), "python", {}, "32Mi", "100m");
+            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getStageInNode().get());
         }
 
         // begin eoepca-app
-        WorkflowGenerator::addNewTemplate(out, app_template_name, docker_image, app_command, "python", {}, "32Mi", "100m");
-
+        //WorkflowGenerator::addNewTemplate(out, app_template_name, docker_image, app_command, "python", {}, "32Mi", "100m");
+        WorkflowGenerator::addNewTemplate(out, app_template_name, &app );
 
         // begin stageout template
         WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"Results: {{inputs.parameters.message}}\")", "python", {}, "32Mi", "100m");

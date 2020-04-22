@@ -25,12 +25,75 @@ std::unique_ptr<EOEPCA::EOEPCAargo> getLib() {
 }
 
 
-int main() {
+void test_workflow_generation() {
 
     auto lib = getLib();
     if (lib == nullptr) {
-        return 5;
+        throw 5;
     }
+
+
+    ///
+    // WITHOUT STAGE IN
+    // WITH SCRIPT
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+    application->setDockerImage("centos:7");
+    application->setUseShell(false);
+    application->addParam("message", "Hello");
+    application->addParam("message1", "World");
+    application->script.command = "python";
+    application->script.source = "print(\"{{workflow.parameters.message}} {{workflow.parameters.message1}}\" )";
+
+    ///
+    // WITHOUT STAGE IN
+    // WITHOUT SCRIPT
+    std::unique_ptr<proc_comm_lib_argo::Application> application1 = std::make_unique<proc_comm_lib_argo::Application>();
+    application1->setDockerImage("centos:7");
+    application1->setUseShell(true);
+    application1->setCommand("echo");
+    application1->addParam("message", "Hello");
+    application1->addParam("message1", "World");
+
+    ///
+    // WITH STAGE IN
+    // WITH SCRIPT
+    std::unique_ptr<proc_comm_lib_argo::Application> application2 = std::make_unique<proc_comm_lib_argo::Application>();
+    application2->setUseShell(false);
+    application2->addParam("message","https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue");
+    application2->script.command="python";
+    application2->script.source="print(\"Downloaded {{inputs.parameters.message}}\")";
+    application2->setDockerImage("centos:7");
+
+    std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageInApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
+    stageInApplication->setUseShell(false);
+    stageInApplication->script.command="python";
+    stageInApplication->script.source="import urllib.request\n"
+                                       "import xml.etree.ElementTree as ET\n"
+                                       "url = '{{inputs.parameters.message}}'\n"
+                                       "response = urllib.request.urlopen(url)\n"
+                                       "xml = response.read()\n"
+                                       "tree = ET.fromstring(xml)\n"
+                                       "enclosure = tree[5][5].get('href')\n"
+                                       "print(urllib.parse.quote(enclosure))";
+    stageInApplication->setDockerImage("meetup/python");
+    application2->setStageInApplication(stageInApplication);
+
+
+    ///
+    // RUN
+    auto run = std::make_unique<proc_comm_lib_argo::Run>();
+    run->moveApplication(application);
+    run->moveApplication(application1);
+    run->moveApplication(application2);
+    std::list<std::string> argoWorkflows{};
+    lib->create_workflow_yaml(run.get(), argoWorkflows);
+    for (auto &argoWorkflow : argoWorkflows) {
+        std::cout << argoWorkflow << "\n";
+    }
+}
+
+
+void test_api() {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
@@ -45,7 +108,7 @@ int main() {
     std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
     application->setDockerImage("centos:7");
     application->addParam("message", "Hello World");
-    application->setApplication("print(\"{{workflow.parameters.message}}\")");
+    application->setCommand("print(\"{{workflow.parameters.message}}\")");
     std::string workflowName;
     try {
         proc_comm_lib_argo::model::Workflow workflow = workflowApi->submitWorkflow(application.get());
@@ -59,13 +122,19 @@ int main() {
     }
 
     // List all workflows
-    auto list = workflowApi->listWorkflows();
-    std::cout << "Api version: " << list.get_api_version()->c_str();
-    std::cout << "Namespace: " << list.get_items()->front().get_metadata()->get_metadata_namespace()->c_str() << std::endl;
-    std::cout << "Number of workflows: " << list.get_items()->size() << std::endl;
-    std::string wfName = list.get_items()->front().get_metadata()->get_name()->c_str();
-    std::cout << "Name of first workflow: " << wfName << std::endl;
-
+    try {
+        auto list = workflowApi->listWorkflows();
+        std::cout << "Api version: " << list.get_api_version()->c_str();
+        std::cout << "Namespace: " << list.get_items()->front().get_metadata()->get_metadata_namespace()->c_str() << std::endl;
+        std::cout << "Number of workflows: " << list.get_items()->size() << std::endl;
+        std::string wfName = list.get_items()->front().get_metadata()->get_name()->c_str();
+        std::cout << "Name of first workflow: " << wfName << std::endl;
+    } catch (proc_comm_lib_argo::ApiException e) {
+        std::cout << "Oopss something went wrong " << std::endl;
+        std::cout << "Error message: " << e.getMessage()->c_str() << std::endl;
+        std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
+        std::cout << "Content: " << e.getContent()->c_str() << std::endl;
+    }
 
 
     try {
@@ -81,7 +150,6 @@ int main() {
     }
 
 
-
     try {
         auto status = workflowApi->deleteWorkflowFromName(workflowName);
         std::cout << "Delete status: " << status.get_status()->c_str();
@@ -91,6 +159,19 @@ int main() {
         std::cout << "Error code: " << *e.getErrorCode().get() << std::endl;
         std::cout << "Content: " << e.getContent()->c_str() << std::endl;
     }
+
+
+}
+
+int main() {
+
+
+
+    // workflow generation
+    //test_workflow_generation();
+
+    // testing api
+    test_api();
 
 
     return 0;
