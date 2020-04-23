@@ -11,6 +11,7 @@ RUN yum update -y && \
     make bzip2 kernel-devel pkgconfig openssl openssl-devel libxml2 libxml2-devel \
     libcurl-devel libcurl curl zlib-devel bison  libxslt libxslt-devel \
     python-devel   libuuid-devel     which  \
+    libmicrohttpd-devel \
     && ln -s /opt/rh/devtoolset-7/enable /etc/profile.d/rhgccenable.sh && chmod +x /etc/profile.d/rhgccenable.sh
 
 
