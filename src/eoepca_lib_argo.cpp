@@ -30,25 +30,61 @@ extern "C" void create_workflow_yaml_from_app(proc_comm_lib_argo::Application *a
 
 
 
-extern "C" void list_workflows(std::string _namespace, proc_comm_lib_argo::model::WorkflowList &workflowList, std::string argoBaseUrl) {
-    std::cout<<"calling list method";
+extern "C" void list_workflows(std::string_view _namespace, proc_comm_lib_argo::model::WorkflowList &workflowList, std::string_view argoBaseUrl) {
+
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl(argoBaseUrl);
+    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
 
-    std::cout<<"calling list method";
     // list method
-    workflowList = workflowApi->listWorkflows(_namespace);
-    std::cout<<workflowList.get_metadata()->get_name()->c_str();
+    workflowList = workflowApi->listWorkflows(_namespace.data());
+
+}
+
+extern "C" void get_workflow_from_name(std::string_view workflow_name, std::string_view _namespace, proc_comm_lib_argo::model::Workflow &workflow, std::string_view argoBaseUrl) {
+
+    // Create api configuration
+    std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
+    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+
+    // Instantiating workflow api
+    std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
+
+    // get method
+    workflow = workflowApi->getWorkflowFromName(workflow_name.data(), _namespace.data());
+
 }
 
 
-/*
-model::Workflow submitWorkflow(Application *application, std::string_view _namespace = default_namespace_constant);
+extern "C" void submit_workflow(proc_comm_lib_argo::Application *application, std::string_view _namespace, proc_comm_lib_argo::model::Workflow &workflow, std::string_view argoBaseUrl) {
 
-model::Workflow getWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
+    // Create api configuration
+    std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
+    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
 
-model::ApiResponse deleteWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);*/
+    // Instantiating workflow api
+    std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
+
+    // get method
+    workflow = workflowApi->submitWorkflow(application, _namespace.data());
+
+}
+
+
+extern "C" void delete_workflow_from_name(std::string_view workflow_name, std::string_view _namespace, proc_comm_lib_argo::model::ApiResponse &response, std::string_view argoBaseUrl) {
+
+    // Create api configuration
+    std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
+    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+
+    // Instantiating workflow api
+    std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
+
+    // get method
+    response = workflowApi->deleteWorkflowFromName(workflow_name.data(), _namespace.data());
+
+}
+

@@ -12,9 +12,10 @@
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
 #include <eoepca/argo/eoepcaargo.hpp>
 #include <eoepca/argo/model/apiexception.hpp>
+#include <eoepca/argo/model/apiresponse.hpp>
 
 
-std::unique_ptr<EOEPCA::EOEPCAargo> getLibArgo2(){
+std::unique_ptr<EOEPCA::EOEPCAargo> getLibArgo2() {
     auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.so");
     if (!lib->IsValid()) {
         lib = std::make_unique<EOEPCA::EOEPCAargo>("/project/build/libeoepcaargo.so");
@@ -105,42 +106,57 @@ long postHttp(std::string_view path, std::string_view configDeployr, std::string
 }
 
 
-
 TEST(TEST2_Argo_rest_api, ListAll) {
-    //auto code = getHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/", response);
-    //std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
-
-    std::cout<<"calling list test";
 
     proc_comm_lib_argo::model::WorkflowList workflowList;
     std::string argo_namespace = "default";
-
-    getLibArgo2()->list_workflows(argo_namespace, workflowList, "http://localhost:9200" );
-
-/*    std::cout << "Number of workflows: " << workflowList.get_items()->size() << std::endl;
-    std::cout << "Api version: " << workflowList.get_api_version()->c_str();
-    std::cout << "Namespace: " << workflowList.get_items()->front().get_metadata()->get_metadata_namespace()->c_str() << std::endl;
-    std::cout << "Number of workflows: " << workflowList.get_items()->size() << std::endl;
-    std::string wfName = workflowList.get_items()->front().get_metadata()->get_name()->c_str();
-    std::cout << "Name of first workflow: " << wfName << std::endl;*/
-
-}
-
-/*
-TEST(TEST2_Argo_rest_api, Submit) {
-    std::string response;
-    auto code = postHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/","{\"hello\":\"ok\"}", response);
-    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+    getLibArgo2()->list_workflows(argo_namespace, workflowList, "http://localhost:9200");
+    int numberOfWorkflows = workflowList.get_items()->size();
+    int expectedNumberOfWorkflows = 90;
+    EXPECT_EQ(numberOfWorkflows, expectedNumberOfWorkflows);
 }
 
 TEST(TEST2_Argo_rest_api, Get) {
-    std::string response;
-    auto code = getHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk", response);
-    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+
+    proc_comm_lib_argo::model::Workflow workflow;
+    std::string argo_namespace = "default";
+    std::string workflowName= "eoepca-app-qqcnk";
+    getLibArgo2()->get_workflow_from_name(workflowName, argo_namespace, workflow, "http://localhost:9200");
+    std::string_view creation_timestamp = workflow.get_metadata()->get_creation_timestamp()->c_str();
+    std::string_view expected_creation_timestamp ="2020-04-21T12:53:45Z";
+    EXPECT_EQ(creation_timestamp, expected_creation_timestamp);
 }
 
+
+TEST(TEST2_Argo_rest_api, Submit) {
+
+    proc_comm_lib_argo::model::Workflow workflow;
+    std::string argo_namespace = "default";
+
+    // sample application
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+    application->setDockerImage("centos:7");
+    application->addParam("message", "Hello World");
+    application->setCommand("print(\"{{workflow.parameters.message}}\")");
+
+    // submitting application
+    getLibArgo2()->submit_workflow(application.get(), argo_namespace, workflow, "http://localhost:9200");
+    std::string_view workflow_name = workflow.get_metadata()->get_name()->c_str();
+    std::string expected_workflowName= "eoepca-app-vsdcp";
+
+    EXPECT_EQ(workflow_name, expected_workflowName);
+}
+
+
 TEST(TEST2_Argo_rest_api, Delete) {
-    std::string response;
-    auto code = deleteHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk", response);
-    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
-}*/
+
+    proc_comm_lib_argo::model::ApiResponse apiResponse;
+    std::string argo_namespace = "default";
+    std::string workflowName= "eoepca-app-qqcnk";
+    getLibArgo2()->delete_workflow_from_name(workflowName, argo_namespace, apiResponse, "http://localhost:9200");
+    std::string_view delete_status = apiResponse.get_status()->c_str();
+    std::string_view expected_delete_status ="Success";
+    EXPECT_EQ(delete_status, expected_delete_status);
+}
+
+

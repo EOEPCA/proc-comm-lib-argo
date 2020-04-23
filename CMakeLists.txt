@@ -62,7 +62,7 @@ SET(MODS_LIBS
 
 
 add_library(eoepcaargo SHARED ${INCLUDE_LIB_SRC} ${LIB_SRC})
-TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp  )
+TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp beeblebrox y2j  )
 
 add_executable(proc-comm-lib-argo ${src_main} ${LIB_SRC})
 

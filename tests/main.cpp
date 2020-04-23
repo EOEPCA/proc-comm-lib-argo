@@ -38,6 +38,12 @@ private:
             return Response(200, "Example: Fake HTTP response");
         }
 
+        // Get workflow
+        if (method == "GET" && matchesPrefix(url, "/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk")) {
+            std::string get_json = getJsonContent("tests/application/data/test2_get_response.json");
+            return Response(200, get_json.c_str());
+        }
+
         // List workflows
         if (method == "GET" && matchesPrefix(url, "/apis/argoproj.io/v1alpha1/namespaces/default/workflows")) {
             std::string list_json = getJsonContent("tests/application/data/test2_list_response.json");
@@ -50,15 +56,11 @@ private:
             return Response(200, list_json.c_str());
         }
 
-        // Get workflow
-        if (method == "GET" && matchesPrefix(url, "/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk")) {
-            std::string list_json = getJsonContent("tests/application/data/test2_get_response.json");
-            return Response(200, list_json.c_str());
-        }
+
 
         // Delete workflow
         if (method == "DELETE" && matchesPrefix(url, "/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk")) {
-            std::string list_json = getJsonContent("tests/application/data/test2_list_response.json");
+            std::string list_json = getJsonContent("tests/application/data/test2_delete_response.json");
             return Response(200, list_json.c_str());
         }
 
