@@ -5,32 +5,27 @@
 #include <fstream>
 
 
-class HTTPMock: public httpmock::MockServer {
+class HTTPMock : public httpmock::MockServer {
 public:
     /// Create HTTP server on port 9200
-    explicit HTTPMock(int port = 9200): MockServer(port) {}
+    explicit HTTPMock(int port = 9200) : MockServer(port) {}
+
 private:
 
-    std::string getJsonContent(std::string path){
+    std::string getJsonContent(std::string path) {
         std::string json;
         std::ifstream infile(path);
         if (infile.good()) {
             std::stringstream sBuffer;
             sBuffer << infile.rdbuf();
-            json=sBuffer.str();
+            json = sBuffer.str();
         }
         return json;
     }
 
 
     /// Handler called by MockServer on HTTP request.
-    Response responseHandler(
-            const std::string &url,
-            const std::string &method,
-            const std::string &data,
-            const std::vector<UrlArg> &urlArguments,
-            const std::vector<Header> &headers)
-    {
+    Response responseHandler(const std::string &url, const std::string &method, const std::string &data, const std::vector<UrlArg> &urlArguments, const std::vector<Header> &headers) {
 
         // example get
         if (method == "GET" && matchesPrefix(url, "/example")) {
@@ -75,9 +70,16 @@ private:
     }
 };
 
+/// Server started
+static httpmock::TestEnvironment<httpmock::MockServerHolder> *mock_server_env = nullptr;
 
 int main(int argc, char *argv[]) {
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::AddGlobalTestEnvironment(new httpmock::TestEnvironment<HTTPMock>());
+    // startup the server for the tests
+    ::testing::Environment *const env = ::testing::AddGlobalTestEnvironment(httpmock::createMockServerEnvironment<HTTPMock>(9200));
+
+    // set global env pointer
+    mock_server_env = dynamic_cast<httpmock::TestEnvironment<httpmock::MockServerHolder> *>(env);
+
     return RUN_ALL_TESTS();
 }
