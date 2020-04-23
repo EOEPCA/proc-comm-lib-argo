@@ -10,7 +10,21 @@
 #include <beeblebrox/includes/zaphodhands/zaphodhand.hpp>
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
+#include <eoepca/argo/eoepcaargo.hpp>
+#include <eoepca/argo/model/apiexception.hpp>
 
+
+std::unique_ptr<EOEPCA::EOEPCAargo> getLibArgo2(){
+    auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.so");
+    if (!lib->IsValid()) {
+        lib = std::make_unique<EOEPCA::EOEPCAargo>("/project/build/libeoepcaargo.so");
+    }
+    if (!lib->IsValid()) {
+        std::cout << "Library not found\n";
+        EXPECT_TRUE(false);
+    }
+    return lib;
+}
 
 /// Port number server is tried to listen on
 /// Number is being incremented while free port has not been found.
@@ -27,7 +41,6 @@ static std::string getServerUrl() {
     url << "http://localhost:" << port << "/";
     return url.str();
 }
-
 
 /**
  * Http Get
@@ -94,11 +107,26 @@ long postHttp(std::string_view path, std::string_view configDeployr, std::string
 
 
 TEST(TEST2_Argo_rest_api, ListAll) {
-    std::string response;
-    auto code = getHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/", response);
-    std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+    //auto code = getHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/", response);
+    //std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
+
+    std::cout<<"calling list test";
+
+    proc_comm_lib_argo::model::WorkflowList workflowList;
+    std::string argo_namespace = "default";
+
+    getLibArgo2()->list_workflows(argo_namespace, workflowList, "http://localhost:9200" );
+
+/*    std::cout << "Number of workflows: " << workflowList.get_items()->size() << std::endl;
+    std::cout << "Api version: " << workflowList.get_api_version()->c_str();
+    std::cout << "Namespace: " << workflowList.get_items()->front().get_metadata()->get_metadata_namespace()->c_str() << std::endl;
+    std::cout << "Number of workflows: " << workflowList.get_items()->size() << std::endl;
+    std::string wfName = workflowList.get_items()->front().get_metadata()->get_name()->c_str();
+    std::cout << "Name of first workflow: " << wfName << std::endl;*/
+
 }
 
+/*
 TEST(TEST2_Argo_rest_api, Submit) {
     std::string response;
     auto code = postHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/","{\"hello\":\"ok\"}", response);
@@ -115,4 +143,4 @@ TEST(TEST2_Argo_rest_api, Delete) {
     std::string response;
     auto code = deleteHttp("localhost:9200/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk", response);
     std::cout << "Code: " << code << std::endl << "Content: " << response << std::endl;
-}
+}*/

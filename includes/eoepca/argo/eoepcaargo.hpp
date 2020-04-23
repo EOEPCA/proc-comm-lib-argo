@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <eoepca/argo/model/workflow.hpp>
+#include <proc-comm-lib-argo/api/apiconfiguration.hpp>
 
 
 namespace EOEPCA {
@@ -28,7 +30,7 @@ namespace EOEPCA {
                 create_workflow_yaml_from_app = (void (*)(proc_comm_lib_argo::Application *, std::string &)) dlsym(handle, "create_workflow_yaml_from_app");
 
                 // API Methods
-
+                list_workflows= (void (*)(std::string, proc_comm_lib_argo::model::WorkflowList &, std::string )) dlsym(handle, "list_workflows");
 
 
                 if (!version) {
@@ -51,9 +53,12 @@ namespace EOEPCA {
     public:
         long (*version)(void);
 
+        // Workflow generation
         void (*create_workflow_yaml)(proc_comm_lib_argo::Run *, std::list<std::string> &);
-
         void (*create_workflow_yaml_from_app)(proc_comm_lib_argo::Application *, std::string &);
+
+        // Workflow api
+        void (*list_workflows)(std::string, proc_comm_lib_argo::model::WorkflowList &, std::string );
     };
 
 } // namespace EOEPCA

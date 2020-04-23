@@ -11,7 +11,7 @@
 #include <beeblebrox/includes/zaphodhands/zaphodhand.hpp>
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
-#include <proc-comm-lib-argo/api/apiexception.hpp>
+#include <eoepca/argo/model/apiexception.hpp>
 
 
 
@@ -197,7 +197,9 @@ namespace proc_comm_lib_argo {
     model::WorkflowList WorkflowApi::listWorkflows(std::string_view argo_namespace) {
 
         std::string response;
-        getHttp(api_configuration->getArgoApiBaseUrl() + "/" + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/", response);
+        std::cout<<api_configuration->getArgoApiBaseUrl()  + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/";
+        getHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/", response);
+        std::cout<<response;
         proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
         if (workflowList.get_kind()->compare("WorkflowList") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);

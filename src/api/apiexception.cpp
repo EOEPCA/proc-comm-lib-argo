@@ -2,7 +2,7 @@
 // Created by bla on 20/04/20.
 //
 
-#include <proc-comm-lib-argo/api/apiexception.hpp>
+#include <eoepca/argo/model/apiexception.hpp>
 
 namespace proc_comm_lib_argo {
 

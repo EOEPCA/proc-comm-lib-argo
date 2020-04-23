@@ -5,7 +5,8 @@
 #include "gtest/gtest.h"
 
 
-std::unique_ptr<EOEPCA::EOEPCAargo> getLibArgo(){
+
+std::unique_ptr<EOEPCA::EOEPCAargo> getLibArgo1(){
     auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./cmake-build-debug/libeoepcaargo.so");
     if (!lib->IsValid()) {
         lib = std::make_unique<EOEPCA::EOEPCAargo>("/project/build/libeoepcaargo.so");
@@ -21,7 +22,7 @@ std::unique_ptr<EOEPCA::EOEPCAargo> getLibArgo(){
 TEST(TEST1_WorkflowGeneration, Without_stage_in) {
 
 
-    auto lib = getLibArgo();
+    auto lib = getLibArgo1();
 
     std::string expected_yamlfile;
     std::string filename = "tests/application/data/test1_workflow.yaml";
@@ -53,7 +54,7 @@ TEST(TEST1_WorkflowGeneration, Without_stage_in) {
 TEST(TEST1_WorkflowGeneration, Without_stage_in_with_script) {
 
 
-    auto lib = getLibArgo();
+    auto lib = getLibArgo1();
 
     std::string expected_yamlfile;
     std::string filename = "tests/application/data/test2_workflow.yaml";
@@ -85,7 +86,7 @@ TEST(TEST1_WorkflowGeneration, Without_stage_in_with_script) {
 
 TEST(TEST1_WorkflowGeneration, With_stage_in) {
 
-    auto lib = getLibArgo();
+    auto lib = getLibArgo1();
 
     std::string expected_yamlfile;
     std::string filename = "tests/application/data/test3_workflow.yaml";
@@ -133,7 +134,7 @@ TEST(TEST1_WorkflowGeneration, With_stage_in) {
 TEST(TEST1_WorkflowGeneration, From_app) {
 
 
-    auto lib = getLibArgo();
+    auto lib = getLibArgo1();
 
     std::string expected_yamlfile;
     std::string filename = "tests/application/data/test2_workflow.yaml";

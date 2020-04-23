@@ -74,7 +74,6 @@ private:
 };
 
 
-
 int main(int argc, char *argv[]) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(new httpmock::TestEnvironment<HTTPMock>());

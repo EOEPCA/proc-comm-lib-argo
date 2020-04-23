@@ -6,13 +6,14 @@
 #include <string>
 #include <list>
 #include <proc-comm-lib-argo/api/workflowgenerator.hpp>
+#include <proc-comm-lib-argo/api/workflowapi.hpp>
 
 extern "C" long version() { return 1; }
 
 /**
  * Creates a workflow yaml from run
  */
-extern "C" void create_workflow_yaml(proc_comm_lib_argo::Run *run,std::list<std::string> &argoWorkflows) {
+extern "C" void create_workflow_yaml(proc_comm_lib_argo::Run *run, std::list<std::string> &argoWorkflows) {
     // loop through all applications
     for (auto &app: run->getApplications()) {
         argoWorkflows.emplace_back(proc_comm_lib_argo::WorkflowGenerator::WorkflowGenerator::create_workflow_yaml(app.get()));
@@ -23,7 +24,31 @@ extern "C" void create_workflow_yaml(proc_comm_lib_argo::Run *run,std::list<std:
  * Creates a workflow yaml from app
  */
 extern "C" void create_workflow_yaml_from_app(proc_comm_lib_argo::Application *app, std::string &argoWorkflow) {
-        argoWorkflow=proc_comm_lib_argo::WorkflowGenerator::WorkflowGenerator::create_workflow_yaml(app);
+    argoWorkflow = proc_comm_lib_argo::WorkflowGenerator::WorkflowGenerator::create_workflow_yaml(app);
 }
 
 
+
+
+extern "C" void list_workflows(std::string _namespace, proc_comm_lib_argo::model::WorkflowList &workflowList, std::string argoBaseUrl) {
+    std::cout<<"calling list method";
+    // Create api configuration
+    std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
+    apiConf->setArgoApiBaseUrl(argoBaseUrl);
+
+    // Instantiating workflow api
+    std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
+
+    std::cout<<"calling list method";
+    // list method
+    workflowList = workflowApi->listWorkflows(_namespace);
+    std::cout<<workflowList.get_metadata()->get_name()->c_str();
+}
+
+
+/*
+model::Workflow submitWorkflow(Application *application, std::string_view _namespace = default_namespace_constant);
+
+model::Workflow getWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
+
+model::ApiResponse deleteWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);*/

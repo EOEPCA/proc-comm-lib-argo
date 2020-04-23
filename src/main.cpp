@@ -3,7 +3,7 @@
 #include <yaml-cpp/node/node.h>
 #include <proc-comm-lib-argo/api/apiconfiguration.hpp>
 #include <proc-comm-lib-argo/api/workflowapi.hpp>
-#include <proc-comm-lib-argo/api/apiexception.hpp>
+#include <eoepca/argo/model/apiexception.hpp>
 
 
 /**
@@ -166,10 +166,10 @@ void test_api() {
 int main() {
 
     // workflow generation
-    test_workflow_generation();
+    //test_workflow_generation();
 
     // testing api
-    //test_api();
+    test_api();
 
 
     return 0;
