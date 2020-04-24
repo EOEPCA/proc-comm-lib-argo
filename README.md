@@ -43,19 +43,29 @@
 
 ## Table of Contents
 
-- [About the Project](#about-the-project)
+- [Table of Contents](#table-of-contents)
+- [About The Project](#about-the-project)
   - [Built With](#built-with)
   - [Travis Build](#travis-build)
   - [Manual Build](#manual-build)
-    - [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites-1)
   - [Installation](#installation)
   - [Testing](#testing)
-- [Documentation](#documentation)
-- [Usage](#usage)
+- [How to use it](#how-to-use-it)
+- [Api Methods](#api-methods)
+  - [submit_workflow](#submitworkflow)
+    - [Parameters](#parameters)
+  - [get_workflow_from_name](#getworkflowfromname)
+    - [Parameters](#parameters-1)
+  - [list_workflows](#listworkflows)
+    - [Parameters](#parameters-2)
+  - [delete_workflow_from_name](#deleteworkflowfromname)
+    - [Parameters](#parameters-3)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
+- [License](#license)
 
 <!-- ABOUT THE PROJECT -->
 
@@ -190,80 +200,111 @@ from the root of the repository
 
 runs only the unit tests
 
-## Documentation
 
-The component documentation can be found at https://github.com/EOEPCA/proc-comm-lib-argo/
+## How to use it
+
+Here is a quick sample of how to use the proc-comm-lib-argo library:
+
+```cpp
+/**
+ * Returns libeoepcaargo.so library
+ * @return
+ */
+std::unique_ptr<EOEPCA::EOEPCAargo> getLib() {
+    auto lib = std::make_unique<EOEPCA::EOEPCAargo>("./libeoepcaargo.so");
+    if (!lib->IsValid()) {
+        // build mac
+        lib = std::make_unique<EOEPCA::EOEPCAargo>("./libeoepcaargo.dylib");
+    }
+    if (!lib->IsValid()) {
+        //
+        std::cout << "libeoepcaargo library not found\n";
+        return nullptr;
+    }
+    return lib;
+}
 
 
-### Running
+int main() {
 
-To run the application has built a runner:
+    auto lib =  getLib();
 
-`proc-comm-lib-argo/src/main.cpp`
+    proc_comm_lib_argo::model::Workflow workflow;
+    std::string argo_namespace = "default";
+    std::string argo_base_url= "http://localhost:8080";
 
-run:
+    // creating a sample application
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+    application->setDockerImage("centos:7");
+    application->setUseShell(false);
+    application->addParam("message", "Hello");
+    application->addParam("message1", "World");
+    application->script.command = "python";
+    application->script.source = "print(\"{{workflow.parameters.message}} {{workflow.parameters.message1}}\")";
 
-```sh
 
-mkdir run
-cp build/proc-comm-lib-argo build/libeoepcaargo.so run/
+    // submitting application
+    lib->submit_workflow(application.get(), argo_namespace, workflow, argo_base_url);
 
-cd run/
+    // printing the name of the submitted workflow
+    std::cout << "Workflow name: " << workflow.get_metadata()->get_name()->c_str() << std::endl;
 
-./proc-comm-lib-argo
-```
-
-expected result:
-```
-Starting test
-
-apiVersion: argoproj.io/v1alpha1
-kind: Workflow
-metadata:
-  generateName: eoepca-
-spec:
-  entrypoint: main
-  templates:
-    - name: main
-      steps:
-        -
-          - name: stage-in
-            template: stage-in-template
-        -
-          - name: eoepca
-            template: eoepca-template
-        -
-          - name: stage-out
-            template: stage-out-template
-    - name: stage-in-template
-      container:
-        image: centos:7
-        command: [echo]
-        args: [stage-in]
-      resources:
-        limits:
-          memory: 32Mi
-          cpu: 100m
-    - name: stage-out-template
-      container:
-        image: centos:7
-        command: [echo]
-        args: [stage-out]
-      resources:
-        limits:
-          memory: 32Mi
-          cpu: 100m
-    - name: eoepca-template
-      container:
-        image: centos:7
-        command: [echo]
-        args: [hello, world]
-      resources:
-        limits:
-          memory: 32Mi
-          cpu: 100m
+    return 0;
+}
 
 ```
+
+## Api Methods
+
+### submit_workflow
+> void submit_workflow(*application, argo_namespace, workflow, argoBaseUrl)
+
+#### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+***application** | **Application**| Reference to the application |
+**argo_namespace** | **String**| Argo Workflow namespace |
+**workflow** | **Workflow**| Workflow instance to populate |
+**argoBaseUrl** | **String**| Argo Workflow base url
+
+### get_workflow_from_name
+> void get_workflow_from_name(workflow_name, argo_namespace, workflow, argoBaseUrl)
+
+#### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**workflow_name** | **String**| Name of workflow |
+**argo_namespace** | **String**| Argo Workflow namespace |
+**workflow** | **Workflow**| Workflow instance to populate |
+**argoBaseUrl** | **String**| Argo Workflow base url
+
+
+### list_workflows
+> void list_workflows(argo_namespace, workflow_list, argoBaseUrl)
+
+#### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**argo_namespace** | **String**| Argo Workflow namespace |
+**workflow_list** | **WorkflowList**| WorkflowList instance to populate. 
+**argoBaseUrl** | **String**| Argo Workflow base url
+
+### delete_workflow_from_name
+> void delete_workflow_from_name(workflow_name, argo_namespace, api_response, argoBaseUrl)
+
+#### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**workflow_name** | **String**| Name of workflow |
+**argo_namespace** | **String**| Argo Workflow namespace |
+**api_response** | **ApiResponse**| ApiResponse instance to populate. | Includes the status of the request
+**argoBaseUrl** | **String**| Argo Workflow base url
+
+
 
 ## Roadmap
 
