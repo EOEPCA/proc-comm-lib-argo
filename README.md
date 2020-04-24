@@ -341,7 +341,7 @@ Name | Type | Description  | Notes
 
 #### Example
 
-Here is a quick sample of how to use the proc-comm-lib-argo library:
+Here is a quick sample of how to use the create_workflow_yaml_from_app method:
 
 ```cpp
 // creating a sample application
