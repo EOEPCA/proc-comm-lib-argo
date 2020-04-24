@@ -52,7 +52,6 @@ private:
         }
 
 
-
         // Delete workflow
         if (method == "DELETE" && matchesPrefix(url, "/apis/argoproj.io/v1alpha1/namespaces/default/workflows/eoepca-app-qqcnk")) {
             std::string list_json = getJsonContent("tests/application/data/test2_delete_response.json");

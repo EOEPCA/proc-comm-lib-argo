@@ -63,6 +63,10 @@
     - [Parameters](#parameters-2)
   - [delete_workflow_from_name](#deleteworkflowfromname)
     - [Parameters](#parameters-3)
+- [Workflow Generation](#workflow-generation)
+  - [create_workflow_yaml_from_app](#createworkflowyamlfromapp)
+    - [Parameters](#parameters-4)
+    - [Example](#example)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -253,9 +257,21 @@ int main() {
 }
 
 ```
-
+The output will look like this:
+```
+Workflow name: eoepca-app-7hhsl
+```
 ## Api Methods
 
+The following table shows the list of methods and their corresponding http call to the Argo Workflow rest api.
+Method | HTTP request | Description
+------------- | ------------- | -------------
+[**submit_workflow**](README.md#submit_workflow) | **POST** /apis/argoproj.io/v1alpha1/namespaces/{namespace} | Submits workflow. 
+[**get_workflow_from_name**](README.md#get_workflow_from_name) | **GET** /apis/argoproj.io/v1alpha1/namespaces/{namespace}/workflows/{worflow_name} | Finds workflow from name 
+[**list_workflows**](README.md#list_workflows) | **GET** /apis/argoproj.io/v1alpha1/namespaces/{namespace}/workflows | Lists all workflows
+[**delete_workflow_from_name**](README.md#delete_workflow_from_name) | **DELETE** /apis/argoproj.io/v1alpha1/namespaces/{namespace}/workflows/{worflow_name} | Deletes a workflow
+
+<a name="submit_workflow"></a>
 ### submit_workflow
 > void submit_workflow(*application, argo_namespace, workflow, argoBaseUrl)
 
@@ -268,6 +284,7 @@ Name | Type | Description  | Notes
 **workflow** | **Workflow**| Workflow instance to populate |
 **argoBaseUrl** | **String**| Argo Workflow base url
 
+<a name="get_workflow_from_name"></a>
 ### get_workflow_from_name
 > void get_workflow_from_name(workflow_name, argo_namespace, workflow, argoBaseUrl)
 
@@ -280,7 +297,7 @@ Name | Type | Description  | Notes
 **workflow** | **Workflow**| Workflow instance to populate |
 **argoBaseUrl** | **String**| Argo Workflow base url
 
-
+<a name="list_workflows"></a>
 ### list_workflows
 > void list_workflows(argo_namespace, workflow_list, argoBaseUrl)
 
@@ -292,6 +309,7 @@ Name | Type | Description  | Notes
 **workflow_list** | **WorkflowList**| WorkflowList instance to populate. 
 **argoBaseUrl** | **String**| Argo Workflow base url
 
+<a name="delete_workflow_from_name"></a>
 ### delete_workflow_from_name
 > void delete_workflow_from_name(workflow_name, argo_namespace, api_response, argoBaseUrl)
 
@@ -304,6 +322,103 @@ Name | Type | Description  | Notes
 **api_response** | **ApiResponse**| ApiResponse instance to populate. | Includes the status of the request
 **argoBaseUrl** | **String**| Argo Workflow base url
 
+## Workflow Generation
+
+When submitting a worklow, the first task that *proc-comm-lib-argo* library executes is the generation of a workflow yaml file containing the specs of the application. Workflow specs are composed of a set of Argo templates where each template consists of an optional input section, an optional output section and either a container invocation or a list of steps where each step invokes another template. For further informations please refer to [Argo Workflow REAME section](https://github.com/argoproj/argo/blob/master/examples/README.md#the-structure-of-workflow-specs).
+The generation of the workflow yaml acts as black box for the invoker of the submit method but it is important to have a knowledge of the structure of the generated yaml; for this reason it is possible to use the [create_workflow_yaml_from_app](README.md#create_workflow_yaml_from_app) method to preview it.
+
+
+<a name="create_workflow_yaml_from_app"></a>
+### create_workflow_yaml_from_app
+> void create_workflow_yaml_from_app(*application,argoWorkflow)
+
+#### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+***application** | **Application**| Reference to the application |
+**argoWorkflow** | **String**| Argo Workflow yaml string |
+
+#### Example
+
+Here is a quick sample of how to use the proc-comm-lib-argo library:
+
+```cpp
+// creating a sample application
+std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+application->setDockerImage("centos:7");
+application->setUseShell(false);
+application->addParam("message", "Hello");
+application->addParam("message1", "World");
+application->script.command = "python";
+application->script.source = "print(\"{{workflow.parameters.message}} {{workflow.parameters.message1}}\")";
+
+std::string yamlString;
+// creating the yaml file from the application
+lib->create_workflow_yaml_from_app(app.get(), yamlString);
+std::cout << yamlString << std::endl;
+```
+Expected output is
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: workflow
+metadata:
+  generateName: eoepca-app-
+  namespace: default
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: message
+        value: Hello
+      - name: message1
+        value: World
+  templates:
+    - name: main
+      steps:
+        -
+          - name: eoepca-app
+            template: eoepca-app-template
+            arguments:
+              parameters:
+                - name: message
+                  value: "{{workflow.parameters.message}}"
+                - name: message1
+                  value: "{{workflow.parameters.message1}}"
+        -
+          - name: stage-out
+            template: stage-out-template
+            arguments:
+              parameters:
+                - name: message
+                  value: "{{steps.eoepca-app.outputs.result}}"
+    - name: eoepca-app-template
+      inputs:
+        parameters:
+          - name: message
+      script:
+        image: centos:7
+        command: [python]
+        source: |
+          print("{{workflow.parameters.message}} {{workflow.parameters.message1}}" )
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+    - name: stage-out-template
+      inputs:
+        parameters:
+          - name: message
+      script:
+        image: centos:7
+        command: [python]
+        source: |
+          print("Results: {{inputs.parameters.message}}")
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+```
 
 
 ## Roadmap

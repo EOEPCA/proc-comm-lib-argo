@@ -32,7 +32,6 @@ void test_workflow_generation() {
         throw 5;
     }
 
-
     ///
     // WITHOUT STAGE IN
     // WITH SCRIPT
@@ -166,7 +165,7 @@ void test_api() {
 int main() {
 
     // workflow generation
-    //test_workflow_generation();
+    test_workflow_generation();
 
     // testing api
     test_api();
