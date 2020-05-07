@@ -19,9 +19,13 @@ include_directories(3ty/libuuid-1.0.3)
 include_directories(3ty/codelithic/src/codelithic/include)
 
 # YAML-CPP
-set(YAML_CPP_BUILD_TESTS OFF: FORCE)
-add_subdirectory(3ty/yaml-cpp-yaml-cpp-0.6.3)
-include_directories(3ty/yaml-cpp-yaml-cpp-0.6.3/include)
+if((NOT DEFINED ENV{IMPORT_YAML_CPP}) OR ($ENV{IMPORT_YAML_CPP}))
+    set(YAML_CPP_BUILD_TESTS OFF: FORCE)
+    add_subdirectory(3ty/yaml-cpp-yaml-cpp-0.6.3)
+    include_directories(3ty/yaml-cpp-yaml-cpp-0.6.3/include)
+ENDIF()
+
+
 
 
 # BEEBLEBOX
@@ -62,7 +66,7 @@ SET(MODS_LIBS
 
 
 add_library(eoepcaargo SHARED ${INCLUDE_LIB_SRC} ${LIB_SRC})
-TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp beeblebrox y2j  )
+TARGET_LINK_LIBRARIES(eoepcaargo ${MODS_LIBS}  yaml-cpp beeblebrox y2j)
 
 add_executable(proc-comm-lib-argo ${src_main} ${LIB_SRC})
 
