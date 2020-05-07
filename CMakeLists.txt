@@ -68,4 +68,9 @@ add_executable(proc-comm-lib-argo ${src_main} ${LIB_SRC})
 
 target_link_libraries(proc-comm-lib-argo yaml-cpp beeblebrox y2j ${MODS_LIBS})
 
-add_subdirectory(tests)
+
+if((NOT DEFINED ENV{RUN_TESTS}) OR ($ENV{RUN_TESTS}))
+    add_subdirectory(tests)
+ENDIF()
+
+
