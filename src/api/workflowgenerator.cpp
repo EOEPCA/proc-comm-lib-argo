@@ -21,10 +21,13 @@ namespace proc_comm_lib_argo {
         out << YAML::BeginMap;
         out << YAML::Key << "parameters";
         out << YAML::BeginSeq;
-        out << YAML::BeginMap;
-        out << YAML::Key << "name";
-        out << YAML::Value << "message";
-        out << YAML::EndMap;
+        for (auto const& param : node->getParams())
+        {
+            out << YAML::BeginMap;
+            out << YAML::Key << "name";
+            out << YAML::Value << param.first;
+            out << YAML::EndMap;
+        }
         out << YAML::EndSeq;
         out << YAML::EndMap;
 
@@ -117,10 +120,13 @@ namespace proc_comm_lib_argo {
         out << YAML::BeginMap;
         out << YAML::Key << "parameters";
         out << YAML::BeginSeq;
-        out << YAML::BeginMap;
-        out << YAML::Key << "name";
-        out << YAML::Value << "message";
-        out << YAML::EndMap;
+        for (auto const& param : inputs)
+        {
+            out << YAML::BeginMap;
+            out << YAML::Key << "name";
+            out << YAML::Value << param.first;
+            out << YAML::EndMap;
+        }
         out << YAML::EndSeq;
         out << YAML::EndMap;
 
@@ -271,7 +277,9 @@ namespace proc_comm_lib_argo {
         WorkflowGenerator::addNewTemplate(out, app_template_name, &app );
 
         // begin stageout template
-        WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"Results: {{inputs.parameters.message}}\")", "python", {}, "32Mi", "100m");
+        std::map<std::string,std::string>messageInput;
+        messageInput["message"]="";
+        WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"{{inputs.parameters.message}}\")", "python", messageInput, "32Mi", "100m");
 
         out << YAML::EndSeq; // end sequence templates
         out << YAML::EndMap; // endmap spec
