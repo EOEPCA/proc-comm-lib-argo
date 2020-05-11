@@ -4,7 +4,7 @@
 #include <proc-comm-lib-argo/api/apiconfiguration.hpp>
 #include <proc-comm-lib-argo/api/workflowapi.hpp>
 #include <eoepca/argo/model/apiexception.hpp>
-
+#include <zconf.h>
 
 /**
  * Returns libeoepcaargo.so library
@@ -23,7 +23,6 @@ std::unique_ptr<EOEPCA::EOEPCAargo> getLib() {
     }
     return lib;
 }
-
 
 void test_workflow_generation() {
 
@@ -58,22 +57,22 @@ void test_workflow_generation() {
     // WITH SCRIPT
     std::unique_ptr<proc_comm_lib_argo::Application> application2 = std::make_unique<proc_comm_lib_argo::Application>();
     application2->setUseShell(false);
-    application2->addParam("message","https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue");
-    application2->script.command="python";
-    application2->script.source="print(\"Downloaded {{inputs.parameters.message}}\")";
+    application2->addParam("message", "https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue");
+    application2->script.command = "python";
+    application2->script.source = "print(\"Downloaded {{inputs.parameters.message}}\")";
     application2->setDockerImage("centos:7");
 
     std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageInApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
     stageInApplication->setUseShell(false);
-    stageInApplication->script.command="python";
-    stageInApplication->script.source="import urllib.request\n"
-                                       "import xml.etree.ElementTree as ET\n"
-                                       "url = '{{inputs.parameters.message}}'\n"
-                                       "response = urllib.request.urlopen(url)\n"
-                                       "xml = response.read()\n"
-                                       "tree = ET.fromstring(xml)\n"
-                                       "enclosure = tree[5][5].get('href')\n"
-                                       "print(urllib.parse.quote(enclosure))";
+    stageInApplication->script.command = "python";
+    stageInApplication->script.source = "import urllib.request\n"
+                                        "import xml.etree.ElementTree as ET\n"
+                                        "url = '{{inputs.parameters.message}}'\n"
+                                        "response = urllib.request.urlopen(url)\n"
+                                        "xml = response.read()\n"
+                                        "tree = ET.fromstring(xml)\n"
+                                        "enclosure = tree[5][5].get('href')\n"
+                                        "print(urllib.parse.quote(enclosure))";
     stageInApplication->setDockerImage("meetup/python");
     application2->setStageInApplication(stageInApplication);
 
@@ -90,7 +89,6 @@ void test_workflow_generation() {
         std::cout << argoWorkflow << "\n";
     }
 }
-
 
 void test_api() {
 
@@ -138,8 +136,7 @@ void test_api() {
         std::cout << "Error code: " << e.getErrorCode() << std::endl;
         std::cout << "Content: " << e.getContent() << std::endl;
     }
-
-
+    sleep(10);
     try {
         auto workflow = workflowApi->getWorkflowFromName(workflowName);
         std::cout << "Name of workflow: " << workflow.get_metadata()->get_name()->c_str() << std::endl;
@@ -152,9 +149,14 @@ void test_api() {
         std::cout << "Content: " << e.getContent() << std::endl;
     }
 
+    sleep(10);
     try {
         auto results = workflowApi->getWorkflowResultsFromName(workflowName);
-        std::cout << "Results " << results.begin()->second<< std::endl;
+        std::cout << "Results "  << std::endl;
+
+        for (auto &[k, p] : results) {
+            std::cout << k << " " << p << "\n";
+        }
     } catch (proc_comm_lib_argo::ApiException e) {
         std::cout << "Oopss something went wrong " << std::endl;
         std::cout << "Error message: " << e.getMessage() << std::endl;
@@ -182,8 +184,6 @@ int main() {
 
     // testing api
     test_api();
-
-
 
     return 0;
 }

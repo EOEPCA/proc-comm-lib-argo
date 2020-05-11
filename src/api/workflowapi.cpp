@@ -231,10 +231,10 @@ namespace proc_comm_lib_argo {
 
         auto json = nlohmann::json::parse(response);
         std::list<std::pair<std::string, std::string>> results;
-        results.emplace_back(std::make_pair("content",json["result"]["content"]));
-        results.emplace_back(std::make_pair("podName",json["result"]["podName"]));
+        results.emplace_back(std::make_pair<std::string ,std::string>("content",json["result"]["content"].get<std::string>().c_str()));
+        results.emplace_back(std::make_pair<std::string ,std::string>("podName",json["result"]["podName"].get<std::string>().c_str()));
 
-        return json;
+        return results;
     }
 
 
