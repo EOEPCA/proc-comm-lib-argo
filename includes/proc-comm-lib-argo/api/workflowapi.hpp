@@ -33,6 +33,7 @@ namespace proc_comm_lib_argo {
         model::Workflow submitWorkflow(Application *application, std::string_view _namespace = default_namespace_constant);
         model::Workflow getWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
         model::ApiResponse deleteWorkflowFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
+        std::list<std::pair<std::string, std::string>> getWorkflowResultsFromName(std::string_view workflow_name, std::string_view _namespace = default_namespace_constant);
 
     protected:
         std::shared_ptr<ApiConfiguration> api_configuration;

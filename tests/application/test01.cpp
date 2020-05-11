@@ -102,7 +102,6 @@ TEST(TEST1_WorkflowGeneration, With_stage_in) {
     std::list<std::string> argoWorkflows{};
     lib->create_workflow_yaml(run.get(), argoWorkflows);
     std::string yamlFile = argoWorkflows.front();
-
     EXPECT_EQ(yamlFile, expected_yamlfile);
 
 }

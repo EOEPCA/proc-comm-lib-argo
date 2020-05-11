@@ -88,3 +88,16 @@ extern "C" void delete_workflow_from_name(std::string_view workflow_name, std::s
 
 }
 
+extern "C" void get_workflow_results_from_name(std::string_view workflow_name, std::string_view _namespace, std::list<std::pair<std::string, std::string>> results, std::string_view argoBaseUrl, std::string_view k8BaseUrl) {
+
+    // Create api configuration
+    std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
+    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+    apiConf->setK8ApiBaseUrl(k8BaseUrl.data());
+
+    // Instantiating workflow api
+    std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
+
+    // get method
+    results = workflowApi->getWorkflowResultsFromName(workflow_name.data(), _namespace.data());
+}

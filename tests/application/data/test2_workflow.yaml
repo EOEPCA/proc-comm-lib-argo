@@ -34,6 +34,7 @@ spec:
       inputs:
         parameters:
           - name: message
+          - name: message1
       script:
         image: centos:7
         command: [python]
@@ -51,7 +52,7 @@ spec:
         image: centos:7
         command: [python]
         source: |
-          print("Results: {{inputs.parameters.message}}")
+          print("{{inputs.parameters.message}}")
       resources:
         limits:
           memory: 32Mi

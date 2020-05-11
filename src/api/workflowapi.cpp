@@ -206,5 +206,36 @@ namespace proc_comm_lib_argo {
         return workflowList;
     }
 
+    /**
+     * Get results of a workflow
+     * @param workflow_name
+     * @param _namespace
+     * @return
+     */
+    std::list<std::pair<std::string, std::string>> WorkflowApi::getWorkflowResultsFromName(std::string_view workflow_name, std::string_view _namespace) {
+
+        model::Workflow workflow = getWorkflowFromName(workflow_name.data(),_namespace.data());
+
+        std::string runningString = "Running";
+        if(runningString.compare(workflow.get_status()->get_phase()->c_str())==0){
+            throw ApiException(404, "Results not found. Workflow is still running", "");
+        }
+        // from workflow, we retrieve the last node
+        std::string node  =  std::prev(workflow.get_status()->get_nodes()->end())->first.c_str();
+
+        std::string response;
+         getHttp(api_configuration->getK8ApiBaseUrl() + api_configuration->getK8ApiPath() + "/workflows/default/" + workflow_name.data() + "/" + node + "/log?logOptions.container=main&logOptions.follow=true",response);
+        if(response.compare("Not Found")==0){
+            throw ApiException(404, "Results not found", "");
+        }
+
+        auto json = nlohmann::json::parse(response);
+        std::list<std::pair<std::string, std::string>> results;
+        results.emplace_back(std::make_pair("content",json["result"]["content"]));
+        results.emplace_back(std::make_pair("podName",json["result"]["podName"]));
+
+        return json;
+    }
+
 
 }

@@ -416,7 +416,7 @@ namespace proc_comm_lib_argo::model {
     };
 
     enum class Phase : int {
-        ERROR, FAILED, SKIPPED, SUCCEEDED
+        ERROR, FAILED, SKIPPED, SUCCEEDED, RUNNING
     };
 
 
@@ -776,6 +776,7 @@ namespace nlohmann {
         else if (j == "Failed") x = proc_comm_lib_argo::model::Phase::FAILED;
         else if (j == "Skipped") x = proc_comm_lib_argo::model::Phase::SKIPPED;
         else if (j == "Succeeded") x = proc_comm_lib_argo::model::Phase::SUCCEEDED;
+        else if (j == "Running") x = proc_comm_lib_argo::model::Phase::RUNNING;
         else throw "Input JSON does not conform to schema";
     }
 
@@ -785,6 +786,7 @@ namespace nlohmann {
             case proc_comm_lib_argo::model::Phase::FAILED: j = "Failed"; break;
             case proc_comm_lib_argo::model::Phase::SKIPPED: j = "Skipped"; break;
             case proc_comm_lib_argo::model::Phase::SUCCEEDED: j = "Succeeded"; break;
+            case proc_comm_lib_argo::model::Phase::RUNNING: j = "Running"; break;
             default: throw "This should not happen";
         }
     }

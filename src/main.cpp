@@ -97,6 +97,7 @@ void test_api() {
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
     apiConf->setArgoApiBaseUrl("http://localhost:8080");
+    apiConf->setK8ApiBaseUrl("http://127.0.0.1:2746");
 
 
     // Instantiating workflow api
@@ -106,8 +107,11 @@ void test_api() {
     // Submit workflow
     std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
     application->setDockerImage("centos:7");
-    application->addParam("message", "Hello World");
-    application->setCommand("print(\"{{workflow.parameters.message}}\")");
+    application->setUseShell(true);
+    application->setCommand("echo");
+    application->addParam("arg1", "Hello");
+    application->addParam("arg2", "World");
+
     std::string workflowName;
     try {
         proc_comm_lib_argo::model::Workflow workflow = workflowApi->submitWorkflow(application.get());
@@ -148,6 +152,15 @@ void test_api() {
         std::cout << "Content: " << e.getContent() << std::endl;
     }
 
+    try {
+        auto results = workflowApi->getWorkflowResultsFromName(workflowName);
+        std::cout << "Results " << results.begin()->second<< std::endl;
+    } catch (proc_comm_lib_argo::ApiException e) {
+        std::cout << "Oopss something went wrong " << std::endl;
+        std::cout << "Error message: " << e.getMessage() << std::endl;
+        std::cout << "Error code: " << e.getErrorCode() << std::endl;
+        std::cout << "Content: " << e.getContent() << std::endl;
+    }
 
     try {
         auto status = workflowApi->deleteWorkflowFromName(workflowName);
@@ -165,10 +178,11 @@ void test_api() {
 int main() {
 
     // workflow generation
-    test_workflow_generation();
+    //test_workflow_generation();
 
     // testing api
     test_api();
+
 
 
     return 0;
