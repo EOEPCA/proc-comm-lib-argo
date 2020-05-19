@@ -10,8 +10,7 @@
 namespace proc_comm_lib_argo {
 
 
-    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate* node) {
-
+    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate* node, bool has_stagein=false) {
 
         out << YAML::BeginMap;
         out << YAML::Key << "name";
@@ -21,11 +20,19 @@ namespace proc_comm_lib_argo {
         out << YAML::BeginMap;
         out << YAML::Key << "parameters";
         out << YAML::BeginSeq;
+
+        if(!has_stagein){
         for (auto const& param : node->getParams())
         {
             out << YAML::BeginMap;
             out << YAML::Key << "name";
             out << YAML::Value << param.first;
+            out << YAML::EndMap;
+        }
+        }else {
+            out << YAML::BeginMap;
+            out << YAML::Key << "name";
+            out << YAML::Value << "pre_processing_output";
             out << YAML::EndMap;
         }
         out << YAML::EndSeq;
@@ -45,9 +52,13 @@ namespace proc_comm_lib_argo {
             out << YAML::Value << YAML::Flow << YAML::BeginSeq ;
 
             std::string command = node->getCommand().c_str();
-            for (auto const& param : node->getParams())
-            {
-                command += " {{workflow.parameters."+param.first+"}}";
+            if(!has_stagein) {
+                for (auto const &param : node->getParams()) {
+                    command += " '{{workflow.parameters." + param.first + "}}'";
+                }
+            }else {
+                command += " '{{inputs.parameters.pre_processing_output}}'";
+
             }
             command += " | tee /tmp/output.txt";
             out << command;
@@ -169,7 +180,7 @@ namespace proc_comm_lib_argo {
         std::string workflow_name = app_name + "-";
         std::string workflow_namespace = "default";
 
-        bool hasStageIn = app.getStageInNode() != NULL;
+        bool hasStageIn = app.getPreProcessingNode() != nullptr;
 
 
         std::string docker_image = app.getDockerImage();
@@ -242,8 +253,8 @@ namespace proc_comm_lib_argo {
 
         main_template["steps"][stepCounter][0]["name"] = app_name;
         main_template["steps"][stepCounter][0]["template"] = app_template_name;
-        main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["name"] = "message";
         if (hasStageIn) {
+            main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["name"] = "pre_processing_output";
             main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps.stage-in.outputs.result}}";
         } else {
             int paramCounter = 0;
@@ -269,17 +280,20 @@ namespace proc_comm_lib_argo {
 
         if (hasStageIn) {
             // begin stagein template
-            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getStageInNode().get());
+            for (std::map<std::string, std::string>::iterator it = app_args.begin(); it != app_args.end(); ++it) {
+                app.getPreProcessingNode()->addParam(it->first,it->second);
+            }
+            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getPreProcessingNode().get());
         }
 
         // begin eoepca-app
         //WorkflowGenerator::addNewTemplate(out, app_template_name, docker_image, app_command, "python", {}, "32Mi", "100m");
-        WorkflowGenerator::addNewTemplate(out, app_template_name, &app );
+        WorkflowGenerator::addNewTemplate(out, app_template_name, &app, hasStageIn );
 
         // begin stageout template
         std::map<std::string,std::string>messageInput;
         messageInput["message"]="";
-        WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"{{inputs.parameters.message}}\")", "python", messageInput, "32Mi", "100m");
+        WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"\"\"{{inputs.parameters.message}}\"\"\")", "python", messageInput, "32Mi", "100m");
 
         out << YAML::EndSeq; // end sequence templates
         out << YAML::EndMap; // endmap spec

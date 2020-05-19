@@ -74,7 +74,7 @@ void test_workflow_generation() {
                                         "enclosure = tree[5][5].get('href')\n"
                                         "print(urllib.parse.quote(enclosure))";
     stageInApplication->setDockerImage("meetup/python");
-    application2->setStageInApplication(stageInApplication);
+    application2->setPreProcessingNode(stageInApplication);
 
 
     ///
@@ -152,7 +152,7 @@ void test_api() {
     sleep(10);
     try {
         auto results = workflowApi->getWorkflowResultsFromName(workflowName);
-        std::cout << "Results "  << std::endl;
+        std::cout << "Results " << std::endl;
 
         for (auto &[k, p] : results) {
             std::cout << k << " " << p << "\n";
@@ -176,6 +176,40 @@ void test_api() {
 
 
 }
+void pre_and_post_processing() {
+    auto lib = getLib();
+    if (lib == nullptr) {
+        throw 5;
+    }
+
+
+    // application object
+    std::unique_ptr<proc_comm_lib_argo::Application> application = std::make_unique<proc_comm_lib_argo::Application>();
+
+    // pre processing node
+    std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageInApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
+    stageInApplication->setDockerImage("centos:7");
+    stageInApplication->setUseShell(true);
+    stageInApplication->setCommand("curl -s -L");
+
+
+    // main application
+    application->addParam("reference_input", "https://loripsum.net/generate.php?p=1&l=short");
+    application->setDockerImage("centos:7");
+    application->setUseShell(true);
+    application->setCommand("echo");
+
+    // adding pre processing to application
+    application->setPreProcessingNode(stageInApplication);
+
+
+    auto run = std::make_unique<proc_comm_lib_argo::Run>();
+    run->moveApplication(application);
+    std::list<std::string> argoWorkflows{};
+    lib->create_workflow_yaml(run.get(), argoWorkflows);
+    std::string yamlFile = argoWorkflows.front();
+    std::cout << yamlFile << std::endl;
+}
 
 int main() {
 
@@ -183,7 +217,10 @@ int main() {
     //test_workflow_generation();
 
     // testing api
-    test_api();
+    //test_api();
+
+    // pre and post processing nodes
+    pre_and_post_processing();
 
     return 0;
 }

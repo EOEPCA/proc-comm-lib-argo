@@ -25,7 +25,7 @@ namespace proc_comm_lib_argo {
 
 
 
-        static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node);
+        static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node, bool hasPreProcessing);
 
 
 
