@@ -13,10 +13,7 @@
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
 #include <eoepca/argo/model/apiexception.hpp>
 
-
-
 namespace proc_comm_lib_argo {
-
 
     /**
      * Constructor
@@ -67,7 +64,6 @@ namespace proc_comm_lib_argo {
         return uri.getHttpReturnCode();
     }
 
-
     /**
     * Http Get
     * @param url
@@ -86,7 +82,6 @@ namespace proc_comm_lib_argo {
         response_content.assign(response.getContent());
         return uri.getHttpReturnCode();
     }
-
 
     /**
      * Htpp Post
@@ -109,7 +104,6 @@ namespace proc_comm_lib_argo {
         resp.assign(response.getContent());
         return retCode;
     }
-
 
     /**
      * Submits an Argo Workflow from Ades Application
@@ -161,9 +155,26 @@ namespace proc_comm_lib_argo {
      */
     model::Workflow WorkflowApi::getWorkflowFromName(std::string_view workflow_name, std::string_view argo_namespace) {
 
+        std::string httpCall = api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data();
         std::string response;
-        getHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data(), response);
-        proc_comm_lib_argo::model::Workflow workflow = nlohmann::json::parse(response);
+        proc_comm_lib_argo::model::Workflow workflow;
+
+        int retries = 3;
+        // will exit when retries == 0, retries then becomes -1
+        while (retries--) {
+            try {
+                getHttp(httpCall, response);
+                workflow = nlohmann::json::parse(response);
+            } catch (nlohmann::json::parse_error) {
+                std::cerr << "error parsing json workflow - attempt #" << 3 - retries << std::endl;
+                sleep(5);
+            }
+            // retries was decremented after last check
+            if (retries < 0) {
+                throw std::runtime_error("error parsing json workflow: " + httpCall);
+            }
+        }
+
         if (workflow.get_kind()->compare("Workflow") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
             throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
@@ -197,8 +208,24 @@ namespace proc_comm_lib_argo {
     model::WorkflowList WorkflowApi::listWorkflows(std::string_view argo_namespace) {
 
         std::string response;
-        getHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/", response);
-        proc_comm_lib_argo::model::WorkflowList workflowList = nlohmann::json::parse(response);
+        std::string httpCall = api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/";
+        proc_comm_lib_argo::model::WorkflowList workflowList;
+        int retries = 3;
+        // will exit when retries == 0, retries then becomes -1
+        while (retries--) {
+            try {
+                getHttp(httpCall, response);
+                workflowList = nlohmann::json::parse(response);
+            } catch (nlohmann::json::parse_error) {
+                std::cerr << "error parsing json workflowlist - attempt #" << 3 - retries << std::endl;
+                sleep(5);
+            }
+            // retries was decremented after last check
+            if (retries < 0) {
+                throw std::runtime_error("error parsing json workflowlist: " + httpCall);
+            }
+        }
+
         if (workflowList.get_kind()->compare("WorkflowList") != 0) {
             proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
             throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
@@ -214,25 +241,42 @@ namespace proc_comm_lib_argo {
      */
     std::list<std::pair<std::string, std::string>> WorkflowApi::getWorkflowResultsFromName(std::string_view workflow_name, std::string_view _namespace) {
 
-        model::Workflow workflow = getWorkflowFromName(workflow_name.data(),_namespace.data());
-
-        std::string runningString = "Running";
-        if(runningString.compare(workflow.get_status()->get_phase()->c_str())==0){
-            throw ApiException(404, "Results not found. Workflow is still running", "");
-        }
-        // from workflow, we retrieve the last node
-        std::string node  =  std::prev(workflow.get_status()->get_nodes()->end())->first.c_str();
-
-        std::string response;
-         getHttp(api_configuration->getK8ApiBaseUrl() + api_configuration->getK8ApiPath() + "/workflows/default/" + workflow_name.data() + "/" + node + "/log?logOptions.container=main&logOptions.follow=true",response);
-        if(response.compare("Not Found")==0){
-            throw ApiException(404, "Results not found", "");
-        }
-
-        auto json = nlohmann::json::parse(response);
+        std::string httpCall;
         std::list<std::pair<std::string, std::string>> results;
-        results.emplace_back(std::make_pair<std::string ,std::string>("content",json["result"]["content"].get<std::string>().c_str()));
-        results.emplace_back(std::make_pair<std::string ,std::string>("podName",json["result"]["podName"].get<std::string>().c_str()));
+        int retries = 3;
+        // will exit when retries == 0, retries then becomes -1
+        while (retries--) {
+            try {
+
+                model::Workflow workflow = getWorkflowFromName(workflow_name.data(), _namespace.data());
+
+                std::string runningString = "Running";
+                if (runningString.compare(workflow.get_status()->get_phase()->c_str()) == 0) {
+                    throw ApiException(404, "Results not found. Workflow is still running", "");
+                }
+                // from workflow, we retrieve the last node
+                std::string node = std::prev(workflow.get_status()->get_nodes()->end())->first.c_str();
+
+                std::string response;
+                httpCall = api_configuration->getK8ApiBaseUrl() + api_configuration->getK8ApiPath() + "/workflows/default/" + workflow_name.data() + "/" + node + "/log?logOptions.container=main&logOptions.follow=true";
+
+                getHttp(httpCall, response);
+                if (response.compare("Not Found") == 0) {
+                    throw ApiException(404, "Results not found", "");
+                }
+                auto json = nlohmann::json::parse(response);
+                results.emplace_back(std::make_pair<std::string, std::string>("content", json["result"]["content"].get<std::string>().c_str()));
+                results.emplace_back(std::make_pair<std::string, std::string>("podName", json["result"]["podName"].get<std::string>().c_str()));
+                break;
+            } catch (nlohmann::json::parse_error) {
+                std::cerr << "error parsing json results - attempt #" << 3 - retries << std::endl;
+                sleep(5);
+            }
+        }
+        // retries was decremented after last check
+        if (retries < 0) {
+            throw std::runtime_error("error parsing json results: " + httpCall);
+        }
 
         return results;
     }
