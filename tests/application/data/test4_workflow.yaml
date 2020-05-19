@@ -7,8 +7,8 @@ spec:
   entrypoint: main
   arguments:
     parameters:
-      - name: message
-        value: https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue
+      - name: reference_input
+        value: https://loripsum.net/generate.php?p=1&l=short
   templates:
     - name: main
       steps:
@@ -17,8 +17,8 @@ spec:
             template: stage-in-template
             arguments:
               parameters:
-                - name: message
-                  value: "{{workflow.parameters.message}}"
+                - name: reference_input
+                  value: "{{workflow.parameters.reference_input}}"
         -
           - name: eoepca-app
             template: eoepca-app-template
@@ -32,23 +32,20 @@ spec:
             arguments:
               parameters:
                 - name: message
-                  value: "{{steps.eoepca-app.outputs.result}}"
+                  value: "{{steps.eoepca-app.outputs.parameters.param}}"
     - name: stage-in-template
       inputs:
         parameters:
-          - name: message
-      script:
-        image: meetup/python
-        command: [python]
-        source: |
-          import urllib.request
-          import xml.etree.ElementTree as ET
-          url = '{{inputs.parameters.message}}'
-          response = urllib.request.urlopen(url)
-          xml = response.read()
-          tree = ET.fromstring(xml)
-          enclosure = tree[5][5].get('href')
-          print(urllib.parse.quote(enclosure))
+          - name: reference_input
+      container:
+        image: centos:7
+        command: [sh, -c]
+        args: ["curl -s -L '{{workflow.parameters.reference_input}}' | tee /tmp/output.txt"]
+      outputs:
+        parameters:
+          - name: param
+            valueFrom:
+              path: /tmp/output.txt
       resources:
         limits:
           memory: 32Mi
@@ -57,11 +54,15 @@ spec:
       inputs:
         parameters:
           - name: pre_processing_output
-      script:
+      container:
         image: centos:7
-        command: [python]
-        source: |
-          print("Downloaded {{inputs.parameters.pre_processing_output}}")
+        command: [sh, -c]
+        args: ["echo '{{inputs.parameters.pre_processing_output}}' | tee /tmp/output.txt"]
+      outputs:
+        parameters:
+          - name: param
+            valueFrom:
+              path: /tmp/output.txt
       resources:
         limits:
           memory: 32Mi
