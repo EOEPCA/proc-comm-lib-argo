@@ -9,8 +9,7 @@
 
 namespace proc_comm_lib_argo {
 
-
-    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate* node, bool has_stagein=false) {
+    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node, bool has_stagein = false) {
 
         out << YAML::BeginMap;
         out << YAML::Key << "name";
@@ -21,15 +20,14 @@ namespace proc_comm_lib_argo {
         out << YAML::Key << "parameters";
         out << YAML::BeginSeq;
 
-        if(!has_stagein){
-        for (auto const& param : node->getParams())
-        {
-            out << YAML::BeginMap;
-            out << YAML::Key << "name";
-            out << YAML::Value << param.first;
-            out << YAML::EndMap;
-        }
-        }else {
+        if (!has_stagein) {
+            for (auto const &param : node->getParams()) {
+                out << YAML::BeginMap;
+                out << YAML::Key << "name";
+                out << YAML::Value << param.first;
+                out << YAML::EndMap;
+            }
+        } else {
             out << YAML::BeginMap;
             out << YAML::Key << "name";
             out << YAML::Value << "pre_processing_output";
@@ -38,8 +36,7 @@ namespace proc_comm_lib_argo {
         out << YAML::EndSeq;
         out << YAML::EndMap;
 
-
-        if(node->isUseShell()){
+        if (node->isUseShell()) {
             out << YAML::Key << "container";
             out << YAML::BeginMap; // container begin map
             out << YAML::Key << "image";
@@ -48,15 +45,14 @@ namespace proc_comm_lib_argo {
             out << YAML::Value << YAML::Flow << YAML::BeginSeq << "sh" << "-c" << YAML::EndSeq;
             out << YAML::Key << "args";
 
-
-            out << YAML::Value << YAML::Flow << YAML::BeginSeq ;
+            out << YAML::Value << YAML::Flow << YAML::BeginSeq;
 
             std::string command = node->getCommand().c_str();
-            if(!has_stagein) {
+            if (!has_stagein) {
                 for (auto const &param : node->getParams()) {
                     command += " '{{workflow.parameters." + param.first + "}}'";
                 }
-            }else {
+            } else {
                 command += " '{{inputs.parameters.pre_processing_output}}'";
 
             }
@@ -70,7 +66,7 @@ namespace proc_comm_lib_argo {
             out << YAML::Key << "outputs";
             out << YAML::BeginMap;
             out << YAML::Key << "parameters";
-            out << YAML::BeginSeq ;
+            out << YAML::BeginSeq;
             out << YAML::BeginMap;
             out << YAML::Key << "name";
             out << YAML::Value << "param";
@@ -110,17 +106,17 @@ namespace proc_comm_lib_argo {
 
 
     }
-        /**
-         * Adds new Template to yaml emitter
-         * @param out
-         * @param name
-         * @param image
-         * @param command
-         * @param scriptLanguage
-         * @param inputs
-         * @param memory
-         * @param cpu
-         */
+    /**
+     * Adds new Template to yaml emitter
+     * @param out
+     * @param name
+     * @param image
+     * @param command
+     * @param scriptLanguage
+     * @param inputs
+     * @param memory
+     * @param cpu
+     */
     void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, std::string image, std::string command, std::string scriptLanguage, std::map<std::string, std::string> inputs, std::string memory, std::string cpu) {
 
         out << YAML::BeginMap;
@@ -131,8 +127,7 @@ namespace proc_comm_lib_argo {
         out << YAML::BeginMap;
         out << YAML::Key << "parameters";
         out << YAML::BeginSeq;
-        for (auto const& param : inputs)
-        {
+        for (auto const &param : inputs) {
             out << YAML::BeginMap;
             out << YAML::Key << "name";
             out << YAML::Value << param.first;
@@ -140,7 +135,6 @@ namespace proc_comm_lib_argo {
         }
         out << YAML::EndSeq;
         out << YAML::EndMap;
-
 
         out << YAML::Key << "script";
         out << YAML::BeginMap;
@@ -166,7 +160,6 @@ namespace proc_comm_lib_argo {
 
     }
 
-
     /**
      * Generates Yaml string from ADES command
      * @param app
@@ -176,12 +169,14 @@ namespace proc_comm_lib_argo {
         YAML::Emitter out;
 
         std::string app_name = "eoepca-app";
+        if (!app.getRunId().empty() && !app.getUuidBaseId().empty()) {
+            app_name = app.getRunId() + app.getUuidBaseId();
+        }
         std::string app_template_name = app_name + "-template";
         std::string workflow_name = app_name + "-";
         std::string workflow_namespace = "default";
 
         bool hasStageIn = app.getPreProcessingNode() != nullptr;
-
 
         std::string docker_image = app.getDockerImage();
         std::string app_command = app.getCommand();
@@ -207,7 +202,7 @@ namespace proc_comm_lib_argo {
         out << YAML::Key << "metadata";
         out << YAML::BeginMap;
         out << YAML::Key << "generateName";
-        out << YAML::Value << "eoepca-app-";
+        out << YAML::Value << app_name + "-";
         out << YAML::Key << "namespace";
         out << YAML::Value << "default";
         out << YAML::EndMap;
@@ -250,7 +245,6 @@ namespace proc_comm_lib_argo {
             stepCounter++;
         }
 
-
         main_template["steps"][stepCounter][0]["name"] = app_name;
         main_template["steps"][stepCounter][0]["template"] = app_template_name;
         if (hasStageIn) {
@@ -269,10 +263,9 @@ namespace proc_comm_lib_argo {
         main_template["steps"][stepCounter][0]["name"] = "stage-out";
         main_template["steps"][stepCounter][0]["template"] = "stage-out-template";
         main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["name"] = "message";
-        if(app.isUseShell()){
+        if (app.isUseShell()) {
             main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps." + app_name + ".outputs.parameters.param}}";
-        }
-        else {
+        } else {
             main_template["steps"][stepCounter][0]["arguments"]["parameters"][0]["value"] = "{{steps." + app_name + ".outputs.result}}";
         }
 
@@ -281,18 +274,18 @@ namespace proc_comm_lib_argo {
         if (hasStageIn) {
             // begin stagein template
             for (std::map<std::string, std::string>::iterator it = app_args.begin(); it != app_args.end(); ++it) {
-                app.getPreProcessingNode()->addParam(it->first,it->second);
+                app.getPreProcessingNode()->addParam(it->first, it->second);
             }
             WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getPreProcessingNode().get());
         }
 
         // begin eoepca-app
         //WorkflowGenerator::addNewTemplate(out, app_template_name, docker_image, app_command, "python", {}, "32Mi", "100m");
-        WorkflowGenerator::addNewTemplate(out, app_template_name, &app, hasStageIn );
+        WorkflowGenerator::addNewTemplate(out, app_template_name, &app, hasStageIn);
 
         // begin stageout template
-        std::map<std::string,std::string>messageInput;
-        messageInput["message"]="";
+        std::map<std::string, std::string> messageInput;
+        messageInput["message"] = "";
         WorkflowGenerator::addNewTemplate(out, "stage-out-template", "centos:7", "print(\"\"\"{{inputs.parameters.message}}\"\"\")", "python", messageInput, "32Mi", "100m");
 
         out << YAML::EndSeq; // end sequence templates
@@ -301,7 +294,6 @@ namespace proc_comm_lib_argo {
         return out.c_str();
 
     }
-
 
     /**
      * creates workflow yaml from ADES Application

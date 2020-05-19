@@ -194,6 +194,8 @@ void pre_and_post_processing() {
 
 
     // main application
+    application->setRunId("t2");
+    application->setUuidBaseId("123");
     application->addParam("reference_input", "https://loripsum.net/generate.php?p=1&l=short");
     application->setDockerImage("centos:7");
     application->setUseShell(true);

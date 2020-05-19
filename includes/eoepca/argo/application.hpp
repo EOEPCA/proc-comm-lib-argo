@@ -70,8 +70,13 @@ namespace proc_comm_lib_argo {
      * represents the main command. Can contain a stage in node.
      */
     class Application : public NodeTemplate {
+
+    private:
         std::unique_ptr<NodeTemplate> preProcessingNode;
         std::unique_ptr<NodeTemplate> postProcessingNode;
+        std::string uuidBaseID;
+        std::string runId;
+
     public:
         Application() = default;
         Application(const Application &) = delete;
@@ -85,6 +90,12 @@ namespace proc_comm_lib_argo {
         // stage-out node
         const std::unique_ptr<NodeTemplate> &getPostProcessingNode() const { return postProcessingNode; }
         void setPostProcessingNode(std::unique_ptr<NodeTemplate> &_postProcessingNode) { postProcessingNode = std::move(_postProcessingNode); }
+
+        const std::string &getUuidBaseId() const { return uuidBaseID; }
+        void setUuidBaseId(const std::string &uuidBaseId) { uuidBaseID = uuidBaseId; }
+
+        const std::string &getRunId() const { return runId; }
+        void setRunId(const std::string &runId) { Application::runId = runId; }
 
     };
 
