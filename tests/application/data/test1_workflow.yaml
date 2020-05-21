@@ -28,8 +28,8 @@ spec:
             template: stage-out-template
             arguments:
               parameters:
-                - name: message
-                  value: "{{steps.eoepca-app.outputs.parameters.param}}"
+                - name: processing_output
+                  value: "{{steps.eoepca-app.outputs.parameters.processing_output}}"
     - name: eoepca-app-template
       inputs:
         parameters:
@@ -38,10 +38,10 @@ spec:
       container:
         image: centos:7
         command: [sh, -c]
-        args: ["echo '{{workflow.parameters.message}}' '{{workflow.parameters.message1}}' | tee /tmp/output.txt"]
+        args: ["echo '{{inputs.parameters.message}}' '{{inputs.parameters.message1}}'  | tee /tmp/output.txt"]
       outputs:
         parameters:
-          - name: param
+          - name: processing_output
             valueFrom:
               path: /tmp/output.txt
       resources:
@@ -51,12 +51,11 @@ spec:
     - name: stage-out-template
       inputs:
         parameters:
-          - name: message
-      script:
+          - name: processing_output
+      container:
         image: centos:7
-        command: [python]
-        source: |
-          print("""{{inputs.parameters.message}}""")
+        command: [sh, -c]
+        args: ["echo '{{inputs.parameters.processing_output}}'  | tee /tmp/output.txt"]
       resources:
         limits:
           memory: 32Mi

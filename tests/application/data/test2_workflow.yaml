@@ -7,39 +7,62 @@ spec:
   entrypoint: main
   arguments:
     parameters:
-      - name: message
-        value: Hello
-      - name: message1
-        value: World
+      - name: reference_input
+        value: https://loripsum.net/generate.php?p=1&l=short
   templates:
     - name: main
       steps:
+        -
+          - name: stage-in
+            template: stage-in-template
+            arguments:
+              parameters:
+                - name: reference_input
+                  value: "{{workflow.parameters.reference_input}}"
         -
           - name: eoepca-app
             template: eoepca-app-template
             arguments:
               parameters:
-                - name: message
-                  value: "{{workflow.parameters.message}}"
-                - name: message1
-                  value: "{{workflow.parameters.message1}}"
+                - name: pre_processing_output
+                  value: "{{steps.stage-in.outputs.parameters.pre_processing_output}}"
         -
           - name: stage-out
             template: stage-out-template
             arguments:
               parameters:
-                - name: message
-                  value: "{{steps.eoepca-app.outputs.result}}"
+                - name: processing_output
+                  value: "{{steps.eoepca-app.outputs.parameters.processing_output}}"
+    - name: stage-in-template
+      inputs:
+        parameters:
+          - name: reference_input
+      container:
+        image: centos:7
+        command: [sh, -c]
+        args: ["curl -s -L  '{{inputs.parameters.reference_input}}'  | tee /tmp/output.txt"]
+      outputs:
+        parameters:
+          - name: pre_processing_output
+            valueFrom:
+              path: /tmp/output.txt
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
     - name: eoepca-app-template
       inputs:
         parameters:
-          - name: message
-          - name: message1
-      script:
+          - name: pre_processing_output
+      container:
         image: centos:7
-        command: [python]
-        source: |
-          print("{{workflow.parameters.message}} {{workflow.parameters.message1}}" )
+        command: [sh, -c]
+        args: ["echo '{{inputs.parameters.pre_processing_output}}'  | tee /tmp/output.txt"]
+      outputs:
+        parameters:
+          - name: processing_output
+            valueFrom:
+              path: /tmp/output.txt
       resources:
         limits:
           memory: 32Mi
@@ -47,12 +70,11 @@ spec:
     - name: stage-out-template
       inputs:
         parameters:
-          - name: message
-      script:
+          - name: processing_output
+      container:
         image: centos:7
-        command: [python]
-        source: |
-          print("""{{inputs.parameters.message}}""")
+        command: [sh, -c]
+        args: ["echo '{{inputs.parameters.processing_output}}'  | tee /tmp/output.txt"]
       resources:
         limits:
           memory: 32Mi

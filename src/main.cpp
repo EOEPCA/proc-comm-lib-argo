@@ -188,21 +188,33 @@ void pre_and_post_processing() {
 
     // pre processing node
     std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageInApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
-    stageInApplication->setDockerImage("centos:7");
+    stageInApplication->setDockerImage("blasco/eoepca-eo-tools");
     stageInApplication->setUseShell(true);
-    stageInApplication->setCommand("curl -s -L");
+    stageInApplication->setCommand("stagein");
 
+
+    std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageOutApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
+    stageOutApplication->setDockerImage("blasco/eoepca-eo-tools");
+    stageOutApplication->setUseShell(true);
+    stageOutApplication->setCommand("cat");
 
     // main application
-    application->setRunId("t2");
-    application->setUuidBaseId("123");
-    application->addParam("reference_input", "https://loripsum.net/generate.php?p=1&l=short");
-    application->setDockerImage("centos:7");
+    application->setRunId("eoepca");
+    application->setUuidBaseId("21052020");
+    application->addParam("reference_input", "https://catalog.terradue.com/sentinel3/search?uid=S3B_SL_1_RBT____20200520T050759_20200520T051059_20200520T060015_0179_039_105_0360_LN2_O_NR_004");
+    application->setDockerImage("blasco/eoepca-eo-tools");
     application->setUseShell(true);
-    application->setCommand("echo");
+    application->setCommand("process_s3_metadata");
+
+    std::map<std::string, std::string> volume;
+    volume["volumeName"] = "workdir";
+    volume["persistentVolumeClaimName"] = "eoepca-pvc";
+    volume["volumeMountPath"] = "/tmp/eoepca";
+    application->setVolume(volume);
 
     // adding pre processing to application
     application->setPreProcessingNode(stageInApplication);
+    application->setPostProcessingNode(stageOutApplication);
 
 
     auto run = std::make_unique<proc_comm_lib_argo::Run>();

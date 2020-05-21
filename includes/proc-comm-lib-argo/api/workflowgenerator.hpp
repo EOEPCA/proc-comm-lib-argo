@@ -19,16 +19,7 @@ namespace proc_comm_lib_argo {
 
         static std::string generateYamlFromApp(Application &app);
 
-        static void addNewTemplate(YAML::Emitter &out, std::string name, std::string image, std::string command,
-                                   std::string scriptLanguage, std::map<std::string, std::string> inputs,
-                                   std::string memory, std::string cpu);
-
-
-
-        static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node, bool hasPreProcessing);
-
-
-
+          static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node,  std::map<std::string, std::string> params, std::string outputParamName, bool has_stagein, std::map<std::string, std::string> volume);
     };
 }
 

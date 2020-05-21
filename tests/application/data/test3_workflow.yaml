@@ -1,14 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: workflow
 metadata:
-  generateName: eoepca-app-
+  generateName: eoepca21052020-
   namespace: default
 spec:
   entrypoint: main
+  volumes:
+    - name: workdir
+      persistentVolumeClaim:
+        claimName: eoepca-pvc
   arguments:
     parameters:
-      - name: message
-        value: https://catalog.terradue.com/eoepca-sentinel3/search?format=atom&uid=S3A_SR_1_SRA____20200408T215451_20200408T224520_20200409T143326_3029_057_043______LN3_O_ST_003&do=terradue
+      - name: reference_input
+        value: https://catalog.terradue.com/sentinel3/search?uid=S3B_SL_1_RBT____20200520T050759_20200520T051059_20200520T060015_0179_039_105_0360_LN2_O_NR_004
   templates:
     - name: main
       steps:
@@ -17,51 +21,58 @@ spec:
             template: stage-in-template
             arguments:
               parameters:
-                - name: message
-                  value: "{{workflow.parameters.message}}"
+                - name: reference_input
+                  value: "{{workflow.parameters.reference_input}}"
         -
-          - name: eoepca-app
-            template: eoepca-app-template
+          - name: eoepca21052020
+            template: eoepca21052020-template
             arguments:
               parameters:
                 - name: pre_processing_output
-                  value: "{{steps.stage-in.outputs.result}}"
+                  value: "{{steps.stage-in.outputs.parameters.pre_processing_output}}"
         -
           - name: stage-out
             template: stage-out-template
             arguments:
               parameters:
-                - name: message
-                  value: "{{steps.eoepca-app.outputs.result}}"
+                - name: processing_output
+                  value: "{{steps.eoepca21052020.outputs.parameters.processing_output}}"
     - name: stage-in-template
       inputs:
         parameters:
-          - name: message
-      script:
-        image: meetup/python
-        command: [python]
-        source: |
-          import urllib.request
-          import xml.etree.ElementTree as ET
-          url = '{{inputs.parameters.message}}'
-          response = urllib.request.urlopen(url)
-          xml = response.read()
-          tree = ET.fromstring(xml)
-          enclosure = tree[5][5].get('href')
-          print(urllib.parse.quote(enclosure))
+          - name: reference_input
+      container:
+        image: blasco/eoepca-eo-tools
+        command: [sh, -c]
+        args: ["stagein '{{inputs.parameters.reference_input}}'"]
+        volumeMounts:
+          - name: workdir
+            mountPath: /tmp/eoepca
+      outputs:
+        parameters:
+          - name: pre_processing_output
+            valueFrom:
+              path: /tmp/output.txt
       resources:
         limits:
           memory: 32Mi
           cpu: 100m
-    - name: eoepca-app-template
+    - name: eoepca21052020-template
       inputs:
         parameters:
           - name: pre_processing_output
-      script:
-        image: centos:7
-        command: [python]
-        source: |
-          print("Downloaded {{inputs.parameters.pre_processing_output}}")
+      container:
+        image: blasco/eoepca-eo-tools
+        command: [sh, -c]
+        args: ["process_s3_metadata '{{inputs.parameters.pre_processing_output}}'"]
+        volumeMounts:
+          - name: workdir
+            mountPath: /tmp/eoepca
+      outputs:
+        parameters:
+          - name: processing_output
+            valueFrom:
+              path: /tmp/output.txt
       resources:
         limits:
           memory: 32Mi
@@ -69,12 +80,14 @@ spec:
     - name: stage-out-template
       inputs:
         parameters:
-          - name: message
-      script:
-        image: centos:7
-        command: [python]
-        source: |
-          print("""{{inputs.parameters.message}}""")
+          - name: processing_output
+      container:
+        image: blasco/eoepca-eo-tools
+        command: [sh, -c]
+        args: ["cat '{{inputs.parameters.processing_output}}'"]
+        volumeMounts:
+          - name: workdir
+            mountPath: /tmp/eoepca
       resources:
         limits:
           memory: 32Mi

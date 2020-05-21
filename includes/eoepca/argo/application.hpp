@@ -25,7 +25,8 @@ namespace proc_comm_lib_argo {
         std::map<std::string, std::string> params;
         std::map<std::string, std::string> envVars{};
         bool useShell = true; // by default set to true, if false the script will be considered
-
+        bool includeTee = false;
+        std::map<std::string, std::string> volume;
     public:
         NodeTemplate() = default;
         NodeTemplate(const NodeTemplate &) = delete;
@@ -63,6 +64,11 @@ namespace proc_comm_lib_argo {
         const std::map<std::string, std::string> &getEnvVars() const { return envVars; }
         void setEnvVars(const std::map<std::string, std::string> &envVars) { NodeTemplate::envVars = envVars; }
 
+        bool isIncludeTee() const { return includeTee; }
+        void setIncludeTee(bool includeTee) { NodeTemplate::includeTee = includeTee; }
+
+        const std::map<std::string, std::string> &getVolume() const { return volume; }
+        void setVolume(const std::map<std::string, std::string> &volume) { NodeTemplate::volume = volume; }
     };
 
     /**
@@ -78,7 +84,15 @@ namespace proc_comm_lib_argo {
         std::string runId;
 
     public:
-        Application() = default;
+        Application() {
+
+            // default stageout is a cat of the application's result
+            std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageOutApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
+            stageOutApplication->setDockerImage("blasco/eoepca-eo-tools");
+            stageOutApplication->setUseShell(true);
+            stageOutApplication->setCommand("cat");
+            setPostProcessingNode(stageOutApplication);
+        }
         Application(const Application &) = delete;
         Application(Application &&) = delete;
         ~Application() = default;
