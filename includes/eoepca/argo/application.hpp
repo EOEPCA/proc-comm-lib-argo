@@ -90,7 +90,7 @@ namespace proc_comm_lib_argo {
             std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageOutApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
             stageOutApplication->setDockerImage("blasco/eoepca-eo-tools");
             stageOutApplication->setUseShell(true);
-            stageOutApplication->setCommand("cat");
+            stageOutApplication->setCommand("echo");
             setPostProcessingNode(stageOutApplication);
         }
         Application(const Application &) = delete;
