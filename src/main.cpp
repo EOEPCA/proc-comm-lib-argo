@@ -107,6 +107,7 @@ void test_api() {
     application->setDockerImage("centos:7");
     application->setUseShell(true);
     application->setCommand("echo");
+    application->setIncludeTee(true);
     application->addParam("arg1", "Hello");
     application->addParam("arg2", "World");
 
@@ -231,10 +232,10 @@ int main() {
     //test_workflow_generation();
 
     // testing api
-    //test_api();
+    test_api();
 
     // pre and post processing nodes
-    pre_and_post_processing();
+    //pre_and_post_processing();
 
     return 0;
 }

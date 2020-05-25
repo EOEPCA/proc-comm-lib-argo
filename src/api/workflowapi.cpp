@@ -12,6 +12,7 @@
 #include <beeblebrox/includes/beeblebrox/httpresponsestring.hpp>
 #include <beeblebrox/includes/beeblebrox/httpcontentstring.hpp>
 #include <eoepca/argo/model/apiexception.hpp>
+#include <list>
 
 namespace proc_comm_lib_argo {
 
@@ -254,8 +255,15 @@ namespace proc_comm_lib_argo {
                 if (runningString.compare(workflow.get_status()->get_phase()->c_str()) == 0) {
                     throw ApiException(404, "Results not found. Workflow is still running", "");
                 }
+
                 // from workflow, we retrieve the last node
-                std::string node = std::prev(workflow.get_status()->get_nodes()->end())->first.c_str();
+                std::string node;
+                for (auto &[k, v]: *workflow.get_status()->get_nodes()) {
+                    if (v.get_template_name()->compare("stage-out-template") == 0) {
+                        node = *v.get_id();
+                        break;
+                    }
+                }
 
                 std::string response;
                 httpCall = api_configuration->getK8ApiBaseUrl() + api_configuration->getK8ApiPath() + "/workflows/default/" + workflow_name.data() + "/" + node + "/log?logOptions.container=main&logOptions.follow=true";
@@ -265,8 +273,7 @@ namespace proc_comm_lib_argo {
                     throw ApiException(404, "Results not found", "");
                 }
                 auto json = nlohmann::json::parse(response);
-                results.emplace_back(std::make_pair<std::string, std::string>("content", json["result"]["results"].get<std::string>().c_str()));
-                //results.emplace_back(std::make_pair<std::string, std::string>("podName", json["result"]["podName"].get<std::string>().c_str()));
+                results.emplace_back(std::make_pair<std::string, std::string>("results", json["result"]["content"].get<std::string>().c_str()));
                 break;
             } catch (nlohmann::json::parse_error) {
                 std::cerr << "error parsing json results - attempt #" << 3 - retries << std::endl;
