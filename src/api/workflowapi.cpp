@@ -265,8 +265,8 @@ namespace proc_comm_lib_argo {
                     throw ApiException(404, "Results not found", "");
                 }
                 auto json = nlohmann::json::parse(response);
-                results.emplace_back(std::make_pair<std::string, std::string>("content", json["result"]["content"].get<std::string>().c_str()));
-                results.emplace_back(std::make_pair<std::string, std::string>("podName", json["result"]["podName"].get<std::string>().c_str()));
+                results.emplace_back(std::make_pair<std::string, std::string>("content", json["result"]["results"].get<std::string>().c_str()));
+                //results.emplace_back(std::make_pair<std::string, std::string>("podName", json["result"]["podName"].get<std::string>().c_str()));
                 break;
             } catch (nlohmann::json::parse_error) {
                 std::cerr << "error parsing json results - attempt #" << 3 - retries << std::endl;
