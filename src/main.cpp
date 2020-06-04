@@ -197,7 +197,16 @@ void pre_and_post_processing() {
     std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageOutApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
     stageOutApplication->setDockerImage("blasco/eoepca-eo-tools");
     stageOutApplication->setUseShell(true);
-    stageOutApplication->setCommand("cat");
+    stageOutApplication->setCommand("eoepca_webdav_client ");
+
+    std::map<std::string, std::string> envVars;
+    envVars["PATH"]="/opt/anaconda/bin:$PATH";
+    stageOutApplication->setEnvVars(envVars);
+
+    std::map<std::string, std::pair<std::string, std::string>> secretEnvVars;
+    secretEnvVars.insert({"SECRET_USERNAME",std::make_pair("eoepcawebdavsecret","username")});
+    secretEnvVars.insert({"SECRET_PASSWORD",std::make_pair("eoepcawebdavsecret","password")});
+    stageOutApplication->setSecrerEnvVars(secretEnvVars);
 
     // main application
     application->setRunId("eoepca");
@@ -232,10 +241,10 @@ int main() {
     //test_workflow_generation();
 
     // testing api
-    test_api();
+    //test_api();
 
     // pre and post processing nodes
-    //pre_and_post_processing();
+    pre_and_post_processing();
 
     return 0;
 }

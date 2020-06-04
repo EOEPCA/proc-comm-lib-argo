@@ -24,6 +24,7 @@ namespace proc_comm_lib_argo {
         std::string command{""};
         std::map<std::string, std::string> params;
         std::map<std::string, std::string> envVars{};
+        std::map<std::string, std::pair<std::string, std::string>> secrerEnvVars{};
         bool useShell = true; // by default set to true, if false the script will be considered
         bool includeTee = false;
         std::map<std::string, std::string> volume;
@@ -69,6 +70,9 @@ namespace proc_comm_lib_argo {
 
         const std::map<std::string, std::string> &getVolume() const { return volume; }
         void setVolume(const std::map<std::string, std::string> &volume) { NodeTemplate::volume = volume; }
+
+        const std::map<std::string, std::pair<std::string, std::string>> &getSecrerEnvVars() const { return secrerEnvVars; }
+        void setSecrerEnvVars(const std::map<std::string, std::pair<std::string, std::string>> &secrerEnvVars) { NodeTemplate::secrerEnvVars = secrerEnvVars; }
     };
 
     /**
@@ -82,6 +86,7 @@ namespace proc_comm_lib_argo {
         std::unique_ptr<NodeTemplate> postProcessingNode;
         std::string uuidBaseID;
         std::string runId;
+        std::string resultId = "results";
 
     public:
         Application() {
@@ -111,6 +116,8 @@ namespace proc_comm_lib_argo {
         const std::string &getRunId() const { return runId; }
         void setRunId(const std::string &runId) { Application::runId = runId; }
 
+        const std::string &getResultId() const { return resultId; }
+        void setResultId(const std::string &resultId) { Application::resultId = resultId; }
     };
 
     class Run {

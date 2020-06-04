@@ -51,7 +51,35 @@ namespace proc_comm_lib_argo {
                 command += "  | tee /tmp/output.txt";
             }
             out << command;
-            out << YAML::EndSeq;
+            out << YAML::EndSeq; // end args
+
+
+            if (node->getSecrerEnvVars().size() != 0 || node->getEnvVars().size() != 0) {
+                out << YAML::Key << "env";
+                out << YAML::BeginSeq;
+                for (auto const secret_env : node->getSecrerEnvVars()) {
+                    out << YAML::BeginMap;
+                    out << YAML::Key << "name" << YAML::Value << secret_env.first; // variable name
+                    out << YAML::Key << "valueFrom" << YAML::Value;
+                    out << YAML::BeginMap; //valueFrom
+                    out << YAML::Key << "secretKeyRef" << YAML::Value;
+                    out << YAML::BeginMap;// secretKeyRef
+                    out << YAML::Key << "name" << YAML::Value << secret_env.second.first;
+                    out << YAML::Key << "key" << YAML::Value << secret_env.second.second;
+                    out << YAML::EndMap; // end secretKeyRef
+                    out << YAML::EndMap;// end valueFrom
+                    out << YAML::EndMap;
+                }
+
+                for (auto const env : node->getEnvVars()) {
+                    out << YAML::BeginMap;
+                    out << YAML::Key << "name" << YAML::Value << env.first; // variable name
+                    out << YAML::Key << "value" << YAML::Value << env.second ; // variable value
+                    out << YAML::EndMap;
+                }
+
+                out << YAML::EndSeq;
+            }
 
             if (volume.size() != 0) {
                 out << YAML::Key << "volumeMounts";
