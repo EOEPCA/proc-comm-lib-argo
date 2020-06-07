@@ -24,7 +24,12 @@ extern "C" void create_workflow_yaml(proc_comm_lib_argo::Run *run, std::list<std
  * Creates a workflow yaml from app
  */
 extern "C" void create_workflow_yaml_from_app(proc_comm_lib_argo::Application *app, std::string &argoWorkflow) {
-    argoWorkflow = proc_comm_lib_argo::WorkflowGenerator::WorkflowGenerator::create_workflow_yaml(app);
+    try {
+        argoWorkflow = proc_comm_lib_argo::WorkflowGenerator::WorkflowGenerator::create_workflow_yaml(app);
+    } catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        throw e;
+    }
 }
 
 
