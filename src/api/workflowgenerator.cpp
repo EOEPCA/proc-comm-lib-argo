@@ -9,7 +9,7 @@
 
 namespace proc_comm_lib_argo {
 
-    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node, std::map<std::string, std::string> params, std::string outputParamName, bool initialNode = false, std::map<std::string, std::string> volume = {}) {
+    void WorkflowGenerator::addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node, std::map<std::string, std::string> params, std::string outputParamName, KubernetesVolumeClaim volumeClaim = {}) {
 
         out << YAML::BeginMap;
         out << YAML::Key << "name";
@@ -81,12 +81,12 @@ namespace proc_comm_lib_argo {
                 out << YAML::EndSeq;
             }
 
-            if (volume.size() != 0) {
+            if (volumeClaim.getVolumeName().size()!=0) {
                 out << YAML::Key << "volumeMounts";
                 out << YAML::BeginSeq;
                 out << YAML::BeginMap;
-                out << YAML::Key << "name" << YAML::Value << volume["volumeName"];
-                out << YAML::Key << "mountPath" << YAML::Value << volume["volumeMountPath"];
+                out << YAML::Key << "name" << YAML::Value << volumeClaim.getVolumeName();
+                out << YAML::Key << "mountPath" << YAML::Value << volumeClaim.getVolumeMountPath();
                 out << YAML::EndMap;
                 out << YAML::EndSeq;
             }
@@ -148,7 +148,7 @@ namespace proc_comm_lib_argo {
     std::string WorkflowGenerator::generateYamlFromApp(Application &app) {
         YAML::Emitter out;
 
-        std::map<std::string, std::string> volume = app.getVolume();
+        KubernetesVolumeClaim volume = app.getKubernetesVolumeClaim();
 
         std::string app_name = "eoepca-app";
         if (!app.getRunId().empty() && !app.getUuidBaseId().empty()) {
@@ -196,16 +196,35 @@ namespace proc_comm_lib_argo {
         out << YAML::Key << "entrypoint";
         out << YAML::Value << "main";
 
-        if (volume.size() != 0) {
-            out << YAML::Key << "volumes";
+        if (volume.getVolumeName().size() != 0) {
+            out << YAML::Key << "volumeClaimTemplates";
             out << YAML::BeginSeq;
+
             out << YAML::BeginMap;
-            out << YAML::Key << "name" << YAML::Value << volume["volumeName"];
-            out << YAML::Key << "persistentVolumeClaim";
+            out << YAML::Key << "metadata";
             out << YAML::BeginMap;
-            out << YAML::Key << "claimName" << YAML::Value << volume["persistentVolumeClaimName"];
+            out << YAML::Key << "name" << YAML::Value << volume.getVolumeName();
+            out << YAML::EndMap;
+            out << YAML::Key << "spec";
+            out << YAML::BeginMap;
+            out << YAML::Key << "accessModes" << YAML::Flow << YAML::BeginSeq;
+            for (const auto accessMode : volume.getAccessModes() ) {
+                out << YAML::DoubleQuoted << accessMode;
+            }
+            out << YAML::EndSeq;
+            out << YAML::Key << "resources";
+            out << YAML::BeginMap;
+            out << YAML::Key << "requests";
+            out << YAML::BeginMap;
+            out << YAML::Key << "storage" << YAML::Value << volume.getVolumeSize();
             out << YAML::EndMap;
             out << YAML::EndMap;
+
+            out << YAML::EndMap;
+
+            out << YAML::EndMap;
+
+
             out << YAML::EndSeq;
         }
 
@@ -277,23 +296,23 @@ namespace proc_comm_lib_argo {
                 app.getPreProcessingNode()->addParam(it->first, it->second);
             }
             std::map<std::string, std::string> stageinParams = app.getParams();
-            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getPreProcessingNode().get(), stageinParams, "pre_processing_output", false, volume);
+            WorkflowGenerator::addNewTemplate(out, "stage-in-template", app.getPreProcessingNode().get(), stageinParams, "pre_processing_output",  volume);
 
             // APP
             // begin eoepca-app
             std::map<std::string, std::string> appParams;
             appParams.insert(std::make_pair("pre_processing_output", ""));
-            WorkflowGenerator::addNewTemplate(out, app_template_name, &app, appParams, "processing_output", hasStageIn, volume);
+            WorkflowGenerator::addNewTemplate(out, app_template_name, &app, appParams, "processing_output", volume);
         } else {
             // APP
             // begin eoepca-app
-            WorkflowGenerator::addNewTemplate(out, app_template_name, &app, app.getParams(), "processing_output", hasStageIn, volume);
+            WorkflowGenerator::addNewTemplate(out, app_template_name, &app, app.getParams(), "processing_output",  volume);
         }
 
         // STAGEOUT
         std::map<std::string, std::string> stageoutParams;
         stageoutParams.insert(std::make_pair("processing_output", ""));
-        WorkflowGenerator::addNewTemplate(out, "stage-out-template", app.getPostProcessingNode().get(), stageoutParams, "", false, volume);
+        WorkflowGenerator::addNewTemplate(out, "stage-out-template", app.getPostProcessingNode().get(), stageoutParams, "",  volume);
 
         out << YAML::EndSeq; // end sequence templates
         out << YAML::EndMap; // endmap spec

@@ -13,6 +13,43 @@
 
 namespace proc_comm_lib_argo {
 
+    class KubernetesVolumeClaim {
+        std::string volumeName = "";
+        std::vector<std::string> accessModes = {"ReadWriteOnce"};
+        std::string volumeSize = "1Gi";
+        std::string volumeMountPath = "/mnt/vol";
+    public:
+        KubernetesVolumeClaim() = default;
+        ~KubernetesVolumeClaim() = default;
+
+        const std::string &getVolumeName() const {
+            return volumeName;
+        }
+        void setVolumeName(const std::string &volumeName) {
+            KubernetesVolumeClaim::volumeName = volumeName;
+        }
+        const std::string &getVolumeSize() const {
+            return volumeSize;
+        }
+        void setVolumeSize(const std::string &volumeSize) {
+            KubernetesVolumeClaim::volumeSize = volumeSize;
+        }
+
+        const std::vector<std::string> &getAccessModes() const {
+            return accessModes;
+        }
+        void setAccessModes(const std::vector<std::string> &accessModes) {
+            KubernetesVolumeClaim::accessModes = accessModes;
+        }
+
+        const std::string &getVolumeMountPath() const {
+            return volumeMountPath;
+        }
+        void setVolumeMountPath(const std::string &volumeMountPath) {
+            KubernetesVolumeClaim::volumeMountPath = volumeMountPath;
+        }
+    };
+
     /**
      * NodeTemplate Class
      * this class represents a template in an argo workflow
@@ -27,7 +64,7 @@ namespace proc_comm_lib_argo {
         std::map<std::string, std::pair<std::string, std::string>> secrerEnvVars{};
         bool useShell = true; // by default set to true, if false the script will be considered
         bool includeTee = false;
-        std::map<std::string, std::string> volume;
+
     public:
         NodeTemplate() = default;
         NodeTemplate(const NodeTemplate &) = delete;
@@ -68,9 +105,6 @@ namespace proc_comm_lib_argo {
         bool isIncludeTee() const { return includeTee; }
         void setIncludeTee(bool includeTee) { NodeTemplate::includeTee = includeTee; }
 
-        const std::map<std::string, std::string> &getVolume() const { return volume; }
-        void setVolume(const std::map<std::string, std::string> &volume) { NodeTemplate::volume = volume; }
-
         const std::map<std::string, std::pair<std::string, std::string>> &getSecrerEnvVars() const { return secrerEnvVars; }
         void setSecrerEnvVars(const std::map<std::string, std::pair<std::string, std::string>> &secrerEnvVars) { NodeTemplate::secrerEnvVars = secrerEnvVars; }
     };
@@ -87,6 +121,7 @@ namespace proc_comm_lib_argo {
         std::string uuidBaseID;
         std::string runId;
         std::string resultId = "results";
+        KubernetesVolumeClaim kubernetesVolumeClaim;
 
     public:
         Application() {
@@ -118,6 +153,9 @@ namespace proc_comm_lib_argo {
 
         const std::string &getResultId() const { return resultId; }
         void setResultId(const std::string &resultId) { Application::resultId = resultId; }
+
+        const KubernetesVolumeClaim &getKubernetesVolumeClaim() const { return kubernetesVolumeClaim; }
+        void setKubernetesVolumeClaim(const KubernetesVolumeClaim &kubernetesVolumeClaim) { Application::kubernetesVolumeClaim = kubernetesVolumeClaim; }
     };
 
     class Run {

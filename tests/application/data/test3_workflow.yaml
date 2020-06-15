@@ -5,10 +5,14 @@ metadata:
   namespace: default
 spec:
   entrypoint: main
-  volumes:
-    - name: workdir
-      persistentVolumeClaim:
-        claimName: eoepca-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: workingdir
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
   arguments:
     parameters:
       - name: reference_input
@@ -46,8 +50,8 @@ spec:
         command: [sh, -c]
         args: ["stagein '{{inputs.parameters.reference_input}}'"]
         volumeMounts:
-          - name: workdir
-            mountPath: /tmp/eoepca
+          - name: workingdir
+            mountPath: /mnt/vol
       outputs:
         parameters:
           - name: pre_processing_output
@@ -66,8 +70,8 @@ spec:
         command: [sh, -c]
         args: ["process_s3_metadata '{{inputs.parameters.pre_processing_output}}'"]
         volumeMounts:
-          - name: workdir
-            mountPath: /tmp/eoepca
+          - name: workingdir
+            mountPath: /mnt/vol
       outputs:
         parameters:
           - name: processing_output
@@ -86,8 +90,8 @@ spec:
         command: [sh, -c]
         args: ["cat '{{inputs.parameters.processing_output}}'"]
         volumeMounts:
-          - name: workdir
-            mountPath: /tmp/eoepca
+          - name: workingdir
+            mountPath: /mnt/vol
       resources:
         limits:
           memory: 32Mi

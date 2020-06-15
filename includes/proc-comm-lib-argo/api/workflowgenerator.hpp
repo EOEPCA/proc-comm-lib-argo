@@ -18,8 +18,7 @@ namespace proc_comm_lib_argo {
         WorkflowGenerator();
 
         static std::string generateYamlFromApp(Application &app);
-
-          static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node,  std::map<std::string, std::string> params, std::string outputParamName, bool has_stagein, std::map<std::string, std::string> volume);
+        static void addNewTemplate(YAML::Emitter &out, std::string name, NodeTemplate *node, std::map<std::string, std::string> params, std::string outputParamName, KubernetesVolumeClaim volumeClaim);
     };
 }
 

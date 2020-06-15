@@ -216,11 +216,13 @@ void pre_and_post_processing() {
     application->setUseShell(true);
     application->setCommand("process_s3_metadata");
 
-    std::map<std::string, std::string> volume;
-    volume["volumeName"] = "workdir";
-    volume["persistentVolumeClaimName"] = "eoepca-pvc";
-    volume["volumeMountPath"] = "/tmp/eoepca";
-    application->setVolume(volume);
+    proc_comm_lib_argo::KubernetesVolumeClaim kubernetesVolumeClaim;
+    std::vector<std::string> accessModes;
+    accessModes.push_back("ReadWriteOnce");
+    kubernetesVolumeClaim.setAccessModes(accessModes);
+    kubernetesVolumeClaim.setVolumeName("workingdir");
+    kubernetesVolumeClaim.setVolumeSize("2Gi");
+    application->setKubernetesVolumeClaim(kubernetesVolumeClaim);
 
     // adding pre processing to application
     application->setPreProcessingNode(stageInApplication);
