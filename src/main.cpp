@@ -243,10 +243,10 @@ int main() {
     //test_workflow_generation();
 
     // testing api
-    test_api();
+    //test_api();
 
     // pre and post processing nodes
-    //pre_and_post_processing();
+    pre_and_post_processing();
 
     return 0;
 }
