@@ -30,11 +30,11 @@ extern "C" void create_workflow_yaml_from_app(proc_comm_lib_argo::Application *a
 
 
 
-extern "C" void list_workflows(std::string_view _namespace, proc_comm_lib_argo::model::WorkflowList &workflowList, std::string_view argoBaseUrl) {
+extern "C" void list_workflows(std::string_view _namespace, proc_comm_lib_argo::model::WorkflowList &workflowList, std::string_view kubernetesBaseUrl) {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+    apiConf->setKubernetesApiBaseUrl(kubernetesBaseUrl.data());
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
@@ -44,11 +44,11 @@ extern "C" void list_workflows(std::string_view _namespace, proc_comm_lib_argo::
 
 }
 
-extern "C" void get_workflow_from_name(std::string_view workflow_name, std::string_view _namespace, proc_comm_lib_argo::model::Workflow &workflow, std::string_view argoBaseUrl) {
+extern "C" void get_workflow_from_name(std::string_view workflow_name, std::string_view _namespace, proc_comm_lib_argo::model::Workflow &workflow, std::string_view kubernetesBaseUrl) {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+    apiConf->setKubernetesApiBaseUrl(kubernetesBaseUrl.data());
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
@@ -59,11 +59,11 @@ extern "C" void get_workflow_from_name(std::string_view workflow_name, std::stri
 }
 
 
-extern "C" void submit_workflow(proc_comm_lib_argo::Application *application, std::string_view _namespace, proc_comm_lib_argo::model::Workflow &workflow, std::string_view argoBaseUrl) {
+extern "C" void submit_workflow(proc_comm_lib_argo::Application *application, std::string_view _namespace, proc_comm_lib_argo::model::Workflow &workflow, std::string_view kubernetesBaseUrl) {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+    apiConf->setKubernetesApiBaseUrl(kubernetesBaseUrl.data());
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
@@ -74,11 +74,11 @@ extern "C" void submit_workflow(proc_comm_lib_argo::Application *application, st
 }
 
 
-extern "C" void delete_workflow_from_name(std::string_view workflow_name, std::string_view _namespace, proc_comm_lib_argo::model::ApiResponse &response, std::string_view argoBaseUrl) {
+extern "C" void delete_workflow_from_name(std::string_view workflow_name, std::string_view _namespace, proc_comm_lib_argo::model::ApiResponse &response, std::string_view kubernetesBaseUrl) {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
+    apiConf->setKubernetesApiBaseUrl(kubernetesBaseUrl.data());
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);
@@ -88,12 +88,12 @@ extern "C" void delete_workflow_from_name(std::string_view workflow_name, std::s
 
 }
 
-extern "C" void get_workflow_results_from_name(std::string_view workflow_name, std::string_view _namespace, std::list<std::pair<std::string, std::string>> results, std::string_view argoBaseUrl, std::string_view k8BaseUrl) {
+extern "C" void get_workflow_results_from_name(std::string_view workflow_name, std::string_view _namespace, std::list<std::pair<std::string, std::string>> results, std::string_view kubernetesBaseUrl, std::string_view argoWorkflowBaseUrl) {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl(argoBaseUrl.data());
-    apiConf->setK8ApiBaseUrl(k8BaseUrl.data());
+    apiConf->setKubernetesApiBaseUrl(kubernetesBaseUrl.data());
+    apiConf->setArgoWorkflowApiBaseUrl(argoWorkflowBaseUrl.data());
 
     // Instantiating workflow api
     std::shared_ptr<proc_comm_lib_argo::WorkflowApi> workflowApi = std::make_shared<proc_comm_lib_argo::WorkflowApi>(apiConf);

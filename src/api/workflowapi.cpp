@@ -132,7 +132,7 @@ namespace proc_comm_lib_argo {
         // Workflow kind must uppercase
         worlflowJson = std::regex_replace(worlflowJson, std::regex("\"kind\": \"workflow\""), "\"kind\": \"Workflow\"");
         std::string response;
-        postHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows", worlflowJson, response);
+        postHttp(api_configuration->getKubernetesApiBaseUrl() + api_configuration->getK8ApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows", worlflowJson, response);
 
         // checking response. If there is an error, an exception is thrown
         rapidjson::Document responseDoc;
@@ -156,7 +156,7 @@ namespace proc_comm_lib_argo {
      */
     model::Workflow WorkflowApi::getWorkflowFromName(std::string_view workflow_name, std::string_view argo_namespace) {
 
-        std::string httpCall = api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data();
+        std::string httpCall = api_configuration->getKubernetesApiBaseUrl() + api_configuration->getK8ApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data();
         std::string response;
         proc_comm_lib_argo::model::Workflow workflow;
 
@@ -192,7 +192,7 @@ namespace proc_comm_lib_argo {
     model::ApiResponse WorkflowApi::deleteWorkflowFromName(std::string_view workflow_name, std::string_view argo_namespace) {
 
         std::string response;
-        deleteHttp(api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data(), response);
+        deleteHttp(api_configuration->getKubernetesApiBaseUrl() + api_configuration->getK8ApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/" + workflow_name.data(), response);
         proc_comm_lib_argo::model::ApiResponse apiResponse = nlohmann::json::parse(response);
         if (apiResponse.get_status()->compare("Failure") == 0) {
             throw ApiException(*apiResponse.get_code().get(), apiResponse.get_message()->c_str(), response);
@@ -209,7 +209,7 @@ namespace proc_comm_lib_argo {
     model::WorkflowList WorkflowApi::listWorkflows(std::string_view argo_namespace) {
 
         std::string response;
-        std::string httpCall = api_configuration->getArgoApiBaseUrl() + api_configuration->getArgoApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/";
+        std::string httpCall = api_configuration->getKubernetesApiBaseUrl() + api_configuration->getK8ApiPath() + "/namespaces/" + argo_namespace.data() + "/workflows/";
         proc_comm_lib_argo::model::WorkflowList workflowList;
         int retries = 3;
         // will exit when retries == 0, retries then becomes -1
@@ -266,7 +266,7 @@ namespace proc_comm_lib_argo {
                 }
 
                 std::string response;
-                httpCall = api_configuration->getK8ApiBaseUrl() + api_configuration->getK8ApiPath() + "/workflows/default/" + workflow_name.data() + "/" + node + "/log?logOptions.container=main&logOptions.follow=true";
+                httpCall = api_configuration->getArgoWorkflowApiBaseUrl() + api_configuration->getArgoApiPath() + "/workflows/default/" + workflow_name.data() + "/" + node + "/log?logOptions.container=main&logOptions.follow=true";
 
                 getHttp(httpCall, response);
                 if (response.compare("Not Found") == 0) {

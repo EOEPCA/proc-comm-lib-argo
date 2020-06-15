@@ -11,8 +11,8 @@
 
 namespace proc_comm_lib_argo {
 
-    static std::string ARGO_API_PATH="/apis/argoproj.io/v1alpha1";
-    static std::string K8_API_PATH="/api/v1";
+    static std::string K8_API_PATH="/apis/argoproj.io/v1alpha1";
+    static std::string ARGO_API_PATH="/api/v1";
 
     /**
      * ApiConfiguration class
@@ -21,18 +21,18 @@ namespace proc_comm_lib_argo {
     class ApiConfiguration {
     public:
         // Constructor
-        ApiConfiguration(std::string k8ApiPath=K8_API_PATH, std::string argoApiPath=ARGO_API_PATH);
+        ApiConfiguration(std::string k8ApiPath=ARGO_API_PATH, std::string argoApiPath=K8_API_PATH);
 
         // Destructor
         virtual ~ApiConfiguration();
 
         // Argo api base url
-        const std::string &getArgoApiBaseUrl() const;
-        void setArgoApiBaseUrl(const std::string &value);
+        const std::string &getKubernetesApiBaseUrl() const;
+        void setKubernetesApiBaseUrl(const std::string &value);
 
         // Kubernetes api base url
-        const std::string &getK8ApiBaseUrl() const;
-        void setK8ApiBaseUrl(const std::string &value);
+        const std::string &getArgoWorkflowApiBaseUrl() const;
+        void setArgoWorkflowApiBaseUrl(const std::string &value);
 
         // Argo api path
         const std::string &getArgoApiPath() const;
@@ -47,10 +47,10 @@ namespace proc_comm_lib_argo {
         void setDefaultHeaders( const std::map<std::string, std::string> value);
 
     protected:
-        std::string argoApiBaseUrl;
-        std::string k8ApiBaseUrl;
-        std::string argoApiPath;
-        std::string k8ApiPath;
+        std::string kubernetesApiBaseUrl;
+        std::string argoWorkflowApiBaseUrl;
+        std::string kubernetesApiPath;
+        std::string argoWorkflowApiPath;
         std::map<std::string, std::string> defaultHeaders;
     };
 

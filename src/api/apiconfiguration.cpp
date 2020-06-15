@@ -10,7 +10,7 @@ namespace proc_comm_lib_argo {
      * Constructor
      * @param apiPath
      */
-    ApiConfiguration::ApiConfiguration(std::string k8ApiPath, std::string argoApiPath) : k8ApiPath(k8ApiPath), argoApiPath(argoApiPath) {
+    ApiConfiguration::ApiConfiguration(std::string argoApiPath, std::string k8ApiPath ) : argoWorkflowApiPath(argoApiPath), kubernetesApiPath(k8ApiPath) {
 
     }
 
@@ -23,16 +23,16 @@ namespace proc_comm_lib_argo {
      * Returns Argo Api base url
      * @return
      */
-    const std::string &ApiConfiguration::getArgoApiBaseUrl() const {
-        return argoApiBaseUrl;
+    const std::string &ApiConfiguration::getKubernetesApiBaseUrl() const {
+        return kubernetesApiBaseUrl;
     }
 
     /**
      * Sets Argo Api base url
      * @param value
      */
-    void ApiConfiguration::setArgoApiBaseUrl(const std::string &value) {
-        argoApiBaseUrl = value;
+    void ApiConfiguration::setKubernetesApiBaseUrl(const std::string &value) {
+        kubernetesApiBaseUrl = value;
     }
 
 
@@ -40,16 +40,16 @@ namespace proc_comm_lib_argo {
  * Returns K8 Api base url
  * @return
  */
-    const std::string &ApiConfiguration::getK8ApiBaseUrl() const {
-        return k8ApiBaseUrl;
+    const std::string &ApiConfiguration::getArgoWorkflowApiBaseUrl() const {
+        return argoWorkflowApiBaseUrl;
     }
 
     /**
      * Sets K8 Api base url
      * @param value
      */
-    void ApiConfiguration::setK8ApiBaseUrl(const std::string &value) {
-        k8ApiBaseUrl = value;
+    void ApiConfiguration::setArgoWorkflowApiBaseUrl(const std::string &value) {
+        argoWorkflowApiBaseUrl = value;
     }
 
 
@@ -60,7 +60,7 @@ namespace proc_comm_lib_argo {
      * @return
      */
     const std::string &ApiConfiguration::getArgoApiPath() const {
-        return argoApiPath;
+        return argoWorkflowApiPath;
     }
 
     /**
@@ -68,7 +68,7 @@ namespace proc_comm_lib_argo {
      * @param apiVersionPath
      */
     void ApiConfiguration::setArgoApiPath(const std::string &apiVersionPath) {
-        argoApiPath = apiVersionPath;
+        argoWorkflowApiPath = apiVersionPath;
     }
 
     /**
@@ -76,7 +76,7 @@ namespace proc_comm_lib_argo {
      * @return
      */
     void ApiConfiguration::setK8ApiPath(const std::string &path) {
-        k8ApiPath=path;
+        kubernetesApiPath=path;
     }
 
     /**
@@ -84,7 +84,7 @@ namespace proc_comm_lib_argo {
      * @return
      */
     const std::string &ApiConfiguration::getK8ApiPath() const {
-        return k8ApiPath;
+        return kubernetesApiPath;
     }
 
     /**

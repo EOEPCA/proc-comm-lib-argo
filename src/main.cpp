@@ -94,8 +94,8 @@ void test_api() {
 
     // Create api configuration
     std::shared_ptr<proc_comm_lib_argo::ApiConfiguration> apiConf = std::make_shared<proc_comm_lib_argo::ApiConfiguration>();
-    apiConf->setArgoApiBaseUrl("http://localhost:8080");
-    apiConf->setK8ApiBaseUrl("http://127.0.0.1:2746");
+    apiConf->setKubernetesApiBaseUrl("http://localhost:8080");
+    apiConf->setArgoWorkflowApiBaseUrl("http://10.152.183.231:2746");
 
 
     // Instantiating workflow api
@@ -243,10 +243,10 @@ int main() {
     //test_workflow_generation();
 
     // testing api
-    //test_api();
+    test_api();
 
     // pre and post processing nodes
-    pre_and_post_processing();
+    //pre_and_post_processing();
 
     return 0;
 }
